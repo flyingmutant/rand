@@ -1,0 +1,30 @@
+name: CI
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "0 */13 * * *"
+jobs:
+  ci:
+    name: CI
+    strategy:
+      matrix:
+        go: ['1.17', '1.18']
+        os: ['ubuntu-latest', 'windows-latest', 'macOS-latest']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: actions/setup-go@v3
+        with:
+          go-version: ${{ matrix.go }}
+
+      - name: Run gofmt
+        run: test -z "$(go fmt .)"
+        shell: bash
+
+      - name: Test
+        run: go test
+
+      - name: Bench
+        run: go test -run=Benchmark -bench=.
