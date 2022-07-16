@@ -31,8 +31,8 @@ const (
 // and that distinct seeds will not run into each other for at least 2^64 iterations.
 type Rand struct {
 	sfc64
-	readVal uint64
-	readPos int8
+	val uint64
+	pos int8
 }
 
 // New returns a generator initialized to a non-deterministic state.
@@ -64,8 +64,8 @@ func (r *Rand) Init() {
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
 	r.init(seed, seed, seed, 1)
-	r.readVal = 0
-	r.readPos = 0
+	r.val = 0
+	r.pos = 0
 }
 
 func (r *Rand) MarshalBinary() ([]byte, error) {
@@ -74,8 +74,8 @@ func (r *Rand) MarshalBinary() ([]byte, error) {
 	binary.LittleEndian.PutUint64(data[8:], r.b)
 	binary.LittleEndian.PutUint64(data[16:], r.c)
 	binary.LittleEndian.PutUint64(data[24:], r.w)
-	binary.LittleEndian.PutUint64(data[32:], r.readVal)
-	data[40] = byte(r.readPos)
+	binary.LittleEndian.PutUint64(data[32:], r.val)
+	data[40] = byte(r.pos)
 	return data[:], nil
 }
 
@@ -87,8 +87,8 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 	r.b = binary.LittleEndian.Uint64(data[8:])
 	r.c = binary.LittleEndian.Uint64(data[16:])
 	r.w = binary.LittleEndian.Uint64(data[24:])
-	r.readVal = binary.LittleEndian.Uint64(data[32:])
-	r.readPos = int8(data[40])
+	r.val = binary.LittleEndian.Uint64(data[32:])
+	r.pos = int8(data[40])
 	return nil
 }
 
@@ -154,19 +154,16 @@ func (r *Rand) Perm(n int) []int {
 
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
-	pos := r.readPos
-	val := r.readVal
+	val, pos := r.val, r.pos
 	for n = 0; n < len(p); n++ {
 		if pos == 0 {
-			val = r.next()
-			pos = 8
+			val, pos = r.next(), 8
 		}
 		p[n] = byte(val)
 		val >>= 8
 		pos--
 	}
-	r.readPos = pos
-	r.readVal = val
+	r.val, r.pos = val, pos
 	return
 }
 
@@ -184,7 +181,14 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 
 // Uint32 returns a pseudo-random 32-bit value as a uint32.
 func (r *Rand) Uint32() uint32 {
-	return uint32(r.next())
+	// unnatural code to fit into inlining budget of 80
+	if r.pos < 4 {
+		r.val, r.pos = r.next(), 4
+		return uint32(r.val >> 32)
+	} else {
+		r.pos = 0
+		return uint32(r.val)
+	}
 }
 
 // Uint32n returns, as a uint32, a pseudo-random number in [0,n). Uint32n(0) returns 0.
