@@ -29,7 +29,7 @@ func TestSFC64_Zig(t *testing.T) {
 	}
 
 	var s sfc64
-	s.init(0, 0, 0, 1)
+	s.init(0, 0, 0, 1, 12)
 
 	for i, u := range golden {
 		v := s.next()
@@ -1044,7 +1044,7 @@ func TestSFC64_NumPy_DEADBEAF(t *testing.T) {
 	}
 
 	var s sfc64
-	s.init(5778446405158232650, 4639759349701729399, 13222832537653397986, 1)
+	s.init(5778446405158232650, 4639759349701729399, 13222832537653397986, 1, 12)
 
 	for i, u := range golden {
 		v := s.next()
@@ -2059,7 +2059,7 @@ func TestSFC64_NumPy_0(t *testing.T) {
 	}
 
 	var s sfc64
-	s.init(15793235383387715774, 12390638538380655177, 2361836109651742017, 1)
+	s.init(15793235383387715774, 12390638538380655177, 2361836109651742017, 1, 12)
 
 	for i, u := range golden {
 		v := s.next()

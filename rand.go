@@ -51,19 +51,14 @@ func NewSeeded(seed uint64) *Rand {
 
 // Init initializes the generator to a non-deterministic state.
 func (r *Rand) Init() {
-	*r = Rand{
-		sfc64: sfc64{
-			a: new(maphash.Hash).Sum64(),
-			b: new(maphash.Hash).Sum64(),
-			c: new(maphash.Hash).Sum64(),
-			w: new(maphash.Hash).Sum64(),
-		},
-	}
+	r.init(new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), 1, 0)
+	r.val = 0
+	r.pos = 0
 }
 
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
-	r.init(seed, seed, seed, 1)
+	r.init(seed, seed, seed, 1, 12)
 	r.val = 0
 	r.pos = 0
 }
