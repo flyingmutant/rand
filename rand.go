@@ -26,30 +26,46 @@ const (
 
 // Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
 //
-// SFC64 has a few different cycles that one might be on, depending on the seed;
-// the expected period will be about 2^255. SFC64 incorporates a 64-bit counter which means that the absolute
-// minimum cycle length is 2^64 and that distinct seeds will not run into each other for at least 2^64 iterations.
+// SFC64 has a few different cycles that one might be on; the expected period is about 2^255.
+// SFC64 incorporates a 64-bit counter which means that the absolute minimum cycle length is 2^64
+// and that distinct seeds will not run into each other for at least 2^64 iterations.
 type Rand struct {
 	sfc64
 	readVal uint64
 	readPos int8
 }
 
-// RandomSeed returns a pseudo-random seed value.
-func RandomSeed() uint64 {
-	return new(maphash.Hash).Sum64()
+// New returns a generator initialized to a non-deterministic state.
+func New() *Rand {
+	var r Rand
+	r.Init()
+	return &r
 }
 
-// New returns a generator seeded with the given value.
-func New(seed uint64) *Rand {
+// NewSeeded returns a generator seeded with the given value.
+func NewSeeded(seed uint64) *Rand {
 	var r Rand
 	r.Seed(seed)
 	return &r
 }
 
+// Init initializes the generator to a non-deterministic state.
+func (r *Rand) Init() {
+	*r = Rand{
+		sfc64: sfc64{
+			a: new(maphash.Hash).Sum64(),
+			b: new(maphash.Hash).Sum64(),
+			c: new(maphash.Hash).Sum64(),
+			w: new(maphash.Hash).Sum64(),
+		},
+	}
+}
+
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
 	r.init(seed, seed, seed, 1)
+	r.readVal = 0
+	r.readPos = 0
 }
 
 func (r *Rand) MarshalBinary() ([]byte, error) {
