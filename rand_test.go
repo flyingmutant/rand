@@ -7,6 +7,7 @@
 package rand_test
 
 import (
+	"bytes"
 	"math"
 	"pgregory.net/rand"
 	"pgregory.net/rapid"
@@ -269,22 +270,21 @@ func TestRand_MarshalBinary_Roundtrip(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		s := rapid.Uint64().Draw(t, "s").(uint64)
 		r1 := rand.NewSeeded(s)
-		_, _ = r1.Read(make([]byte, 3))
-		data, err := r1.MarshalBinary()
+		data1, err := r1.MarshalBinary()
 		if err != nil {
 			t.Fatalf("got unexpected marshal error: %v", err)
 		}
 		var r2 rand.Rand
-		err = r2.UnmarshalBinary(data)
+		err = r2.UnmarshalBinary(data1)
 		if err != nil {
 			t.Fatalf("got unexpected unmarshal error: %v", err)
 		}
-		var v1 [13]byte
-		var v2 [13]byte
-		_, _ = r1.Read(v1[:])
-		_, _ = r2.Read(v2[:])
-		if v1 != v2 {
-			t.Fatalf("read %q / %q after marshal/unmarshal", v1, v2)
+		data2, err := r2.MarshalBinary()
+		if err != nil {
+			t.Fatalf("got unexpected marshal error: %v", err)
+		}
+		if !bytes.Equal(data1, data2) {
+			t.Fatalf("data %q / %q after marshal/unmarshal", data1, data2)
 		}
 	})
 }

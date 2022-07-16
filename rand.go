@@ -19,9 +19,8 @@ const (
 	int31Mask = 1<<31 - 1
 	int53Mask = 1<<53 - 1
 	int63Mask = 1<<63 - 1
-	intMask   = math.MaxInt
 
-	randSizeof = 8*4 + 8 + 1
+	randSizeof = 8*4 + 8 + 1 + 8 + 1
 )
 
 // Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
@@ -31,8 +30,10 @@ const (
 // to not run into each other for at least 2^64 iterations.
 type Rand struct {
 	sfc64
-	val uint64
-	pos int8
+	readVal   uint64
+	uint32Val uint64
+	readPos   int8
+	hasUint32 bool // using readVal and readPos for uint32 has too high inlining cost
 }
 
 // New returns a generator initialized to a non-deterministic state.
@@ -51,15 +52,16 @@ func NewSeeded(seed uint64) *Rand {
 
 func (r *Rand) seed() {
 	r.init(new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), 1, 0)
-	r.val = 0
-	r.pos = 0
+	// no need to zero anything, since the only caller is New
 }
 
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
 	r.init(seed, seed, seed, 1, 12)
-	r.val = 0
-	r.pos = 0
+	r.readVal = 0
+	r.uint32Val = 0
+	r.readPos = 0
+	r.hasUint32 = false
 }
 
 // MarshalBinary returns the binary representation of the current state of the generator.
@@ -69,8 +71,12 @@ func (r *Rand) MarshalBinary() ([]byte, error) {
 	binary.LittleEndian.PutUint64(data[8:], r.b)
 	binary.LittleEndian.PutUint64(data[16:], r.c)
 	binary.LittleEndian.PutUint64(data[24:], r.w)
-	binary.LittleEndian.PutUint64(data[32:], r.val)
-	data[40] = byte(r.pos)
+	binary.LittleEndian.PutUint64(data[32:], r.readVal)
+	binary.LittleEndian.PutUint64(data[40:], r.uint32Val)
+	data[48] = byte(r.readPos)
+	if r.hasUint32 {
+		data[49] = 1
+	}
 	return data[:], nil
 }
 
@@ -83,14 +89,16 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 	r.b = binary.LittleEndian.Uint64(data[8:])
 	r.c = binary.LittleEndian.Uint64(data[16:])
 	r.w = binary.LittleEndian.Uint64(data[24:])
-	r.val = binary.LittleEndian.Uint64(data[32:])
-	r.pos = int8(data[40])
+	r.readVal = binary.LittleEndian.Uint64(data[32:])
+	r.uint32Val = binary.LittleEndian.Uint64(data[40:])
+	r.readPos = int8(data[48])
+	r.hasUint32 = data[49] == 1
 	return nil
 }
 
 // Float32 returns, as a float32, a pseudo-random number in the half-open interval [0.0,1.0).
 func (r *Rand) Float32() float32 {
-	return float32(r.next()&int24Mask) * 0x1.0p-24
+	return float32(r.uint32_()&int24Mask) * 0x1.0p-24
 }
 
 // Float64 returns, as a float64, a pseudo-random number in the half-open interval [0.0,1.0).
@@ -100,12 +108,16 @@ func (r *Rand) Float64() float64 {
 
 // Int returns a non-negative pseudo-random int.
 func (r *Rand) Int() int {
-	return int(r.next() & intMask)
+	if math.MaxInt == math.MaxInt32 {
+		return int(r.uint32_() & int31Mask)
+	} else {
+		return int(r.next() & int63Mask)
+	}
 }
 
 // Int31 returns a non-negative pseudo-random 31-bit integer as an int32.
 func (r *Rand) Int31() int32 {
-	return int32(r.next() & int31Mask)
+	return int32(r.uint32_() & int31Mask)
 }
 
 // Int31n returns, as an int32, a non-negative pseudo-random number in the half-open interval [0,n). It panics if n <= 0.
@@ -134,7 +146,11 @@ func (r *Rand) Intn(n int) int {
 	if n <= 0 {
 		panic("invalid argument to Intn")
 	}
-	return int(r.Uint64n(uint64(n)))
+	if math.MaxInt == math.MaxInt32 {
+		return int(r.Uint32n(uint32(n)))
+	} else {
+		return int(r.Uint64n(uint64(n)))
+	}
 }
 
 // Perm returns, as a slice of n ints, a pseudo-random permutation of the integers in the half-open interval [0,n).
@@ -150,7 +166,7 @@ func (r *Rand) Perm(n int) []int {
 
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
-	val, pos := r.val, r.pos
+	val, pos := r.readVal, r.readPos
 	for n = 0; n < len(p); n++ {
 		if pos == 0 {
 			val, pos = r.next(), 8
@@ -159,7 +175,7 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 		val >>= 8
 		pos--
 	}
-	r.val, r.pos = val, pos
+	r.readVal, r.readPos = val, pos
 	return
 }
 
@@ -177,13 +193,18 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 
 // Uint32 returns a pseudo-random 32-bit value as a uint32.
 func (r *Rand) Uint32() uint32 {
+	return uint32(r.uint32_())
+}
+
+// uint32_ has a bit lower inlining cost because of uint64 return value
+func (r *Rand) uint32_() uint64 {
 	// unnatural code to fit into inlining budget of 80
-	if r.pos < 4 {
-		r.val, r.pos = r.next(), 4
-		return uint32(r.val >> 32)
+	if r.hasUint32 {
+		r.hasUint32 = false
+		return r.uint32Val
 	} else {
-		r.pos = 0
-		return uint32(r.val)
+		r.uint32Val, r.hasUint32 = r.next(), true
+		return r.uint32Val >> 32
 	}
 }
 

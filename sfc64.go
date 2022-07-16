@@ -25,11 +25,11 @@ func (s *sfc64) init(a uint64, b uint64, c uint64, w uint64, n int) {
 	}
 }
 
-func (s *sfc64) next() uint64 {
-	out := s.a + s.b + s.w
+func (s *sfc64) next() (out uint64) { // named return value lowers inlining cost a bit
+	out = s.a + s.b + s.w
 	s.w++
 	s.a = s.b ^ (s.b >> 11)
 	s.b = s.c + (s.c << 3)
 	s.c = bits.RotateLeft64(s.c, 24) + out
-	return out
+	return
 }
