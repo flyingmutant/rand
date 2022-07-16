@@ -68,6 +68,7 @@ func (r *Rand) Seed(seed uint64) {
 	r.pos = 0
 }
 
+// MarshalBinary returns the binary representation of the current state of the generator.
 func (r *Rand) MarshalBinary() ([]byte, error) {
 	var data [randSizeof]byte
 	binary.LittleEndian.PutUint64(data[0:], r.a)
@@ -79,6 +80,7 @@ func (r *Rand) MarshalBinary() ([]byte, error) {
 	return data[:], nil
 }
 
+// UnmarshalBinary sets the state of the generator to the state represented in data.
 func (r *Rand) UnmarshalBinary(data []byte) error {
 	if len(data) < randSizeof {
 		return io.ErrUnexpectedEOF
