@@ -26,9 +26,9 @@ const (
 
 // Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
 //
-// SFC64 has a few different cycles that one might be on; the expected period is about 2^255.
-// SFC64 incorporates a 64-bit counter which means that the absolute minimum cycle length is 2^64
-// and that distinct seeds will not run into each other for at least 2^64 iterations.
+// SFC64 has 256 bits of state, average period of ~2^255 and minimum period of at least 2^64.
+// Generators returned by New or NewSeeded (with distinct seeds) are guaranteed
+// to not run into each other for at least 2^64 iterations.
 type Rand struct {
 	sfc64
 	val uint64
@@ -38,7 +38,7 @@ type Rand struct {
 // New returns a generator initialized to a non-deterministic state.
 func New() *Rand {
 	var r Rand
-	r.Init()
+	r.seed()
 	return &r
 }
 
@@ -49,8 +49,7 @@ func NewSeeded(seed uint64) *Rand {
 	return &r
 }
 
-// Init initializes the generator to a non-deterministic state.
-func (r *Rand) Init() {
+func (r *Rand) seed() {
 	r.init(new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), 1, 0)
 	r.val = 0
 	r.pos = 0
