@@ -6,6 +6,11 @@
 
 package rand_test
 
+const (
+	tiny  = 100
+	small = 1000
+)
+
 var (
 	sinkInt     int
 	sinkInt32   int32
