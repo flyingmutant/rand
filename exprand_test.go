@@ -14,11 +14,17 @@ import (
 	"testing"
 )
 
+var (
+	sinkRand *rand.Rand
+)
+
 func BenchmarkRand_New(b *testing.B) {
+	var s *rand.Rand
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		rand.New(rand.NewSource(uint64(i)))
+		s = rand.New(rand.NewSource(uint64(i)))
 	}
+	sinkRand = s
 }
 
 func BenchmarkRand_ExpFloat64(b *testing.B) {

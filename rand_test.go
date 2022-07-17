@@ -16,18 +16,26 @@ import (
 	"testing"
 )
 
+var (
+	sinkRand *rand.Rand
+)
+
 func BenchmarkRand_New(b *testing.B) {
+	var s *rand.Rand
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		rand.New()
+		s = rand.New()
 	}
+	sinkRand = s
 }
 
 func BenchmarkRand_NewSeeded(b *testing.B) {
+	var s *rand.Rand
 	b.ReportAllocs()
 	for i := 0; i < b.N; i++ {
-		rand.NewSeeded(1)
+		s = rand.NewSeeded(1)
 	}
+	sinkRand = s
 }
 
 func BenchmarkRand_ExpFloat64(b *testing.B) {
