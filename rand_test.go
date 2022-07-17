@@ -34,73 +34,93 @@ func BenchmarkRand_NewSeeded(b *testing.B) {
 }
 
 func BenchmarkRand_ExpFloat64(b *testing.B) {
+	var s float64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.ExpFloat64()
+		s = r.ExpFloat64()
 	}
+	sinkFloat64 = s
 }
 
 func BenchmarkRand_Float32(b *testing.B) {
+	var s float32
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Float32()
+		s = r.Float32()
 	}
+	sinkFloat32 = s
 }
 
 func BenchmarkRand_Float64(b *testing.B) {
+	var s float64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Float64()
+		s = r.Float64()
 	}
+	sinkFloat64 = s
 }
 
 func BenchmarkRand_Int(b *testing.B) {
+	var s int
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Int()
+		s = r.Int()
 	}
+	sinkInt = s
 }
 
 func BenchmarkRand_Int31(b *testing.B) {
+	var s int32
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Int31()
+		s = r.Int31()
 	}
+	sinkInt32 = s
 }
 
 func BenchmarkRand_Int31n(b *testing.B) {
+	var s int32
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Int31n(small)
+		s = r.Int31n(small)
 	}
+	sinkInt32 = s
 }
 
 func BenchmarkRand_Int63(b *testing.B) {
+	var s int64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Int63()
+		s = r.Int63()
 	}
+	sinkInt64 = s
 }
 
 func BenchmarkRand_Int63n(b *testing.B) {
+	var s int64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Int63n(small)
+		s = r.Int63n(small)
 	}
+	sinkInt64 = s
 }
 
 func BenchmarkRand_Intn(b *testing.B) {
+	var s int
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Intn(small)
+		s = r.Intn(small)
 	}
+	sinkInt = s
 }
 
 func BenchmarkRand_NormFloat64(b *testing.B) {
+	var s float64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.NormFloat64()
+		s = r.NormFloat64()
 	}
+	sinkFloat64 = s
 }
 
 func BenchmarkRand_Perm(b *testing.B) {
@@ -143,45 +163,57 @@ func BenchmarkRand_ShuffleOverhead(b *testing.B) {
 }
 
 func BenchmarkRand_Uint32(b *testing.B) {
+	var s uint32
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Uint32()
+		s = r.Uint32()
 	}
+	sinkUint32 = s
 }
 
 func BenchmarkRand_Uint32n(b *testing.B) {
+	var s uint32
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Uint32n(small)
+		s = r.Uint32n(small)
 	}
+	sinkUint32 = s
 }
 
 func BenchmarkRand_Uint32n_Big(b *testing.B) {
+	var s uint32
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Uint32n(math.MaxUint32 - small)
+		s = r.Uint32n(math.MaxUint32 - small)
 	}
+	sinkUint32 = s
 }
 
 func BenchmarkRand_Uint64(b *testing.B) {
+	var s uint64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Uint64()
+		s = r.Uint64()
 	}
+	sinkUint64 = s
 }
 
 func BenchmarkRand_Uint64n(b *testing.B) {
+	var s uint64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Uint64n(small)
+		s = r.Uint64n(small)
 	}
+	sinkUint64 = s
 }
 
 func BenchmarkRand_Uint64n_Big(b *testing.B) {
+	var s uint64
 	r := rand.NewSeeded(1)
 	for i := 0; i < b.N; i++ {
-		r.Uint64n(math.MaxUint64 - small)
+		s = r.Uint64n(math.MaxUint64 - small)
 	}
+	sinkUint64 = s
 }
 
 func TestRand_Float32(t *testing.T) {
