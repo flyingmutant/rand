@@ -169,8 +169,13 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	if n < 0 {
 		panic("invalid argument to Shuffle")
 	}
-	for i := n - 1; i > 0; i-- {
+	i := n - 1
+	for ; i > math.MaxUint32-1; i-- {
 		j := int(r.Uint64n(uint64(i) + 1))
+		swap(i, j)
+	}
+	for ; i > 0; i-- {
+		j := int(r.Uint32n(uint32(i) + 1))
 		swap(i, j)
 	}
 }
