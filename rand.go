@@ -19,7 +19,7 @@ const (
 	int53Mask = 1<<53 - 1
 	int63Mask = 1<<63 - 1
 
-	randSizeof = 8*4 + 8*2 + 1 + 1
+	randSizeof = 8*4 + 8 + 1
 )
 
 // Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
@@ -29,10 +29,8 @@ const (
 // to not run into each other for at least 2^64 iterations.
 type Rand struct {
 	sfc64
-	readVal   uint64
-	uint32Val uint64
-	readPos   int8
-	hasUint32 bool // using readVal and readPos for uint32 has too high inlining cost
+	val uint64
+	pos int8
 }
 
 // New returns a generator initialized to a non-deterministic state.
@@ -62,12 +60,8 @@ func (r *Rand) MarshalBinary() ([]byte, error) {
 	binary.LittleEndian.PutUint64(data[8:], r.b)
 	binary.LittleEndian.PutUint64(data[16:], r.c)
 	binary.LittleEndian.PutUint64(data[24:], r.w)
-	binary.LittleEndian.PutUint64(data[32:], r.readVal)
-	binary.LittleEndian.PutUint64(data[40:], r.uint32Val)
-	data[48] = byte(r.readPos)
-	if r.hasUint32 {
-		data[49] = 1
-	}
+	binary.LittleEndian.PutUint64(data[32:], r.val)
+	data[40] = byte(r.pos)
 	return data[:], nil
 }
 
@@ -80,10 +74,8 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 	r.b = binary.LittleEndian.Uint64(data[8:])
 	r.c = binary.LittleEndian.Uint64(data[16:])
 	r.w = binary.LittleEndian.Uint64(data[24:])
-	r.readVal = binary.LittleEndian.Uint64(data[32:])
-	r.uint32Val = binary.LittleEndian.Uint64(data[40:])
-	r.readPos = int8(data[48])
-	r.hasUint32 = data[49] == 1
+	r.val = binary.LittleEndian.Uint64(data[32:])
+	r.pos = int8(data[40])
 	return nil
 }
 
@@ -157,7 +149,7 @@ func (r *Rand) Perm(n int) []int {
 
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
-	val, pos := r.readVal, r.readPos
+	val, pos := r.val, r.pos
 	for n = 0; n < len(p); n++ {
 		if pos == 0 {
 			val, pos = r.next(), 8
@@ -166,7 +158,7 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 		val >>= 8
 		pos--
 	}
-	r.readVal, r.readPos = val, pos
+	r.val, r.pos = val, pos
 	return
 }
 
@@ -190,12 +182,12 @@ func (r *Rand) Uint32() uint32 {
 // uint32_ has a bit lower inlining cost because of uint64 return value
 func (r *Rand) uint32_() uint64 {
 	// unnatural code to fit into inlining budget of 80
-	if r.hasUint32 {
-		r.hasUint32 = false
-		return r.uint32Val
+	if r.pos < 4 {
+		r.val, r.pos = r.next(), 4
+		return r.val >> 32
 	} else {
-		r.uint32Val, r.hasUint32 = r.next(), true
-		return r.uint32Val >> 32
+		r.pos = 0
+		return r.val
 	}
 }
 
