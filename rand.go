@@ -49,8 +49,9 @@ func NewSeeded(seed uint64) *Rand {
 
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
-	*r = Rand{}
 	r.init1(seed)
+	r.pos = 0
+	r.val = 0
 }
 
 // MarshalBinary returns the binary representation of the current state of the generator.
