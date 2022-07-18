@@ -194,15 +194,11 @@ func (r *Rand) uint32_() uint64 {
 
 // Uint32n returns, as a uint32, a pseudo-random number in [0,n). Uint32n(0) returns 0.
 func (r *Rand) Uint32n(n uint32) uint32 {
-	// 32-bit version of Uint64n()
-	v := r.next()
-	res, frac := bits.Mul32(n, uint32(v))
-	if frac < n {
-		hi, _ := bits.Mul32(n, uint32(v>>32))
-		_, carry := bits.Add32(frac, hi, 0)
-		res += carry
-	}
-	return res
+	// much faster 32-bit version of Uint64n(); result is unbiased with probability 1 - 2^-32.
+	// detecting possible bias would require about 2^64 samples, which we consider acceptable
+	// since it matches 2^64 guarantees about period length and distance between different seeds
+	res, _ := bits.Mul64(uint64(n), r.next())
+	return uint32(res)
 }
 
 // Uint64 returns a pseudo-random 64-bit value as a uint64.
@@ -213,6 +209,7 @@ func (r *Rand) Uint64() uint64 {
 // Uint64n returns, as a uint64, a pseudo-random number in [0,n). Uint64n(0) returns 0.
 func (r *Rand) Uint64n(n uint64) uint64 {
 	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
+	// making second multiplication unconditional makes the function inlineable, but slows things down for small n
 	res, frac := bits.Mul64(n, r.next())
 	if frac < n {
 		hi, _ := bits.Mul64(n, r.next())
