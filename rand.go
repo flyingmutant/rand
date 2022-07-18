@@ -8,7 +8,6 @@ package rand
 
 import (
 	"encoding/binary"
-	"hash/maphash"
 	"io"
 	"math"
 	"math/bits"
@@ -20,7 +19,7 @@ const (
 	int53Mask = 1<<53 - 1
 	int63Mask = 1<<63 - 1
 
-	randSizeof = 8*4 + 8 + 1 + 8 + 1
+	randSizeof = 8*4 + 8*2 + 1 + 1
 )
 
 // Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
@@ -39,29 +38,21 @@ type Rand struct {
 // New returns a generator initialized to a non-deterministic state.
 func New() *Rand {
 	var r Rand
-	r.seed()
+	r.init0()
 	return &r
 }
 
 // NewSeeded returns a generator seeded with the given value.
 func NewSeeded(seed uint64) *Rand {
 	var r Rand
-	r.Seed(seed)
+	r.init1(seed)
 	return &r
-}
-
-func (r *Rand) seed() {
-	r.init(new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), new(maphash.Hash).Sum64(), 1, 0)
-	// no need to zero anything, since the only caller is New
 }
 
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
-	r.init(seed, seed, seed, 1, 12)
-	r.readVal = 0
-	r.uint32Val = 0
-	r.readPos = 0
-	r.hasUint32 = false
+	*r = Rand{}
+	r.init1(seed)
 }
 
 // MarshalBinary returns the binary representation of the current state of the generator.
