@@ -47,11 +47,9 @@ func (s *sfc64) init1(u uint64) { // noinline makes sure NewSeeded can be inline
 	}
 }
 
-func (s *sfc64) next() (out uint64) { // named return value lowers inlining cost a bit
+func (s *sfc64) next() (out uint64) { // named return value lowers inlining cost
 	out = s.a + s.b + s.w
 	s.w++
-	s.a = s.b ^ (s.b >> 11)
-	s.b = s.c + (s.c << 3)
-	s.c = bits.RotateLeft64(s.c, 24) + out
+	s.a, s.b, s.c = s.b^(s.b>>11), s.c+(s.c<<3), bits.RotateLeft64(s.c, 24)+out // single assignment lowers inlining cost
 	return
 }
