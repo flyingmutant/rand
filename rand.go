@@ -25,7 +25,7 @@ const (
 // Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
 //
 // SFC64 has 256 bits of state, average period of ~2^255 and minimum period of at least 2^64.
-// Generators returned by New or NewSeeded (with distinct seeds) are guaranteed
+// Generators returned by New (with empty or distinct seeds) are guaranteed
 // to not run into each other for at least 2^64 iterations.
 type Rand struct {
 	sfc64
@@ -33,18 +33,27 @@ type Rand struct {
 	pos int8
 }
 
-// New returns a generator initialized to a non-deterministic state.
-func New() *Rand {
+// New returns an initialized generator. If seed is empty, generator is initialized to a non-deterministic state.
+// Otherwise, generator is seeded with the values from seed. New panics if len(seed) > 3.
+func New(seed ...uint64) *Rand {
 	var r Rand
-	r.init0()
+	r.new_(seed...)
 	return &r
 }
 
-// NewSeeded returns a generator seeded with the given value.
-func NewSeeded(seed uint64) *Rand {
-	var r Rand
-	r.init1(seed)
-	return &r
+func (r *Rand) new_(seed ...uint64) {
+	switch len(seed) {
+	case 0:
+		r.init0()
+	case 1:
+		r.init1(seed[0])
+	case 2:
+		r.init3(seed[0], seed[1], 0)
+	case 3:
+		r.init3(seed[0], seed[1], seed[2])
+	default:
+		panic("invalid New seed sequence length")
+	}
 }
 
 // Seed uses the provided seed value to initialize the generator to a deterministic state.

@@ -105,7 +105,7 @@ func checkSampleSliceDistributions(t *testing.T, samples []float64, nslices int,
 //
 
 func generateNormalSamples(nsamples int, mean, stddev float64, seed int64) []float64 {
-	r := NewSeeded(uint64(seed))
+	r := New(uint64(seed))
 	samples := make([]float64, nsamples)
 	for i := range samples {
 		samples[i] = r.NormFloat64()*stddev + mean
@@ -162,7 +162,7 @@ func TestNonStandardNormalValues(t *testing.T) {
 //
 
 func generateExponentialSamples(nsamples int, rate float64, seed int64) []float64 {
-	r := NewSeeded(uint64(seed))
+	r := New(uint64(seed))
 	samples := make([]float64, nsamples)
 	for i := range samples {
 		samples[i] = r.ExpFloat64() / rate
@@ -356,7 +356,7 @@ func TestFloat32(t *testing.T) {
 		num /= 100 // 1.72 seconds instead of 172 seconds
 	}
 
-	r := NewSeeded(1)
+	r := New(1)
 	for ct := 0; ct < num; ct++ {
 		f := r.Float32()
 		if f >= 1 {
@@ -366,7 +366,7 @@ func TestFloat32(t *testing.T) {
 }
 
 func testReadUniformity(t *testing.T, n int, seed int64) {
-	r := NewSeeded(uint64(seed))
+	r := New(uint64(seed))
 	buf := make([]byte, n)
 	nRead, err := r.Read(buf)
 	if err != nil {
@@ -406,7 +406,7 @@ func TestReadUniformity(t *testing.T) {
 }
 
 func TestReadEmpty(t *testing.T) {
-	r := NewSeeded(1)
+	r := New(1)
 	buf := make([]byte, 0)
 	n, err := r.Read(buf)
 	if err != nil {
@@ -418,13 +418,13 @@ func TestReadEmpty(t *testing.T) {
 }
 
 func TestReadByOneByte(t *testing.T) {
-	r := NewSeeded(1)
+	r := New(1)
 	b1 := make([]byte, 100)
 	_, err := io.ReadFull(iotest.OneByteReader(r), b1)
 	if err != nil {
 		t.Errorf("read by one byte: %v", err)
 	}
-	r = NewSeeded(1)
+	r = New(1)
 	b2 := make([]byte, 100)
 	_, err = r.Read(b2)
 	if err != nil {
@@ -436,7 +436,7 @@ func TestReadByOneByte(t *testing.T) {
 }
 
 func TestReadSeedReset(t *testing.T) {
-	r := NewSeeded(42)
+	r := New(42)
 	b1 := make([]byte, 128)
 	_, err := r.Read(b1)
 	if err != nil {
@@ -455,7 +455,7 @@ func TestReadSeedReset(t *testing.T) {
 
 func TestShuffleSmall(t *testing.T) {
 	// Check that Shuffle allows n=0 and n=1, but that swap is never called for them.
-	r := NewSeeded(1)
+	r := New(1)
 	for n := 0; n <= 1; n++ {
 		r.Shuffle(n, func(i, j int) { t.Fatalf("swap called, n=%d i=%d j=%d", n, i, j) })
 	}
@@ -486,7 +486,7 @@ func encodePerm(s []int) int {
 
 // TestUniformFactorial tests several ways of generating a uniform value in [0, n!).
 func TestUniformFactorial(t *testing.T) {
-	r := NewSeeded(uint64(testSeeds[0]))
+	r := New(uint64(testSeeds[0]))
 	top := 6
 	if testing.Short() {
 		top = 3

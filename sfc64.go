@@ -28,21 +28,29 @@ func (s *sfc64) init(a uint64, b uint64, c uint64) {
 	}
 }
 
-//go:noinline
-func (s *sfc64) init0() { // noinline makes sure New can be inlined, helping with escape analysis
+func (s *sfc64) init0() {
 	s.a = new(maphash.Hash).Sum64()
 	s.b = new(maphash.Hash).Sum64()
 	s.c = new(maphash.Hash).Sum64()
 	s.w = 1
 }
 
-//go:noinline
-func (s *sfc64) init1(u uint64) { // noinline makes sure NewSeeded can be inlined, helping with escape analysis
+func (s *sfc64) init1(u uint64) {
 	s.a = u
 	s.b = u
 	s.c = u
 	s.w = 1
 	for i := 0; i < 12; i++ {
+		s.next()
+	}
+}
+
+func (s *sfc64) init3(a uint64, b uint64, c uint64) {
+	s.a = a
+	s.b = b
+	s.c = c
+	s.w = 1
+	for i := 0; i < 18; i++ {
 		s.next()
 	}
 }
