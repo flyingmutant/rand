@@ -178,6 +178,7 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	if n < 0 {
 		panic("invalid argument to Shuffle")
 	}
+	// Uint64n is too big to be inlined, so call Uint32n explicitly when appropriate
 	i := n - 1
 	for ; i > math.MaxUint32-1; i-- {
 		j := int(r.Uint64n(uint64(i) + 1))
@@ -222,12 +223,11 @@ func (r *Rand) Uint64() uint64 {
 
 // Uint64n returns, as a uint64, a pseudo-random number in [0,n). Uint64n(0) returns 0.
 func (r *Rand) Uint64n(n uint64) uint64 {
-	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
-	// making second multiplication unconditional makes the function inlineable, but slows things down for small n
-	res, frac := bits.Mul64(n, r.next())
-	if frac <= -n {
-		return res
+	if n <= math.MaxUint32 {
+		return uint64(r.Uint32n(uint32(n)))
 	}
+	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
+	res, frac := bits.Mul64(n, r.next())
 	hi, _ := bits.Mul64(n, r.next())
 	_, carry := bits.Add64(frac, hi, 0)
 	return res + carry
