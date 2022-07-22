@@ -1,5 +1,10 @@
 /.idea/
 /.vscode/
 /testdata/
+
+/misc/cppbench/bench-c
+/misc/cppbench/bench-g
 /misc/practrand/practrand
+
 *.swp
+*.o
