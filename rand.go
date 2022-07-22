@@ -228,6 +228,9 @@ func (r *Rand) Uint64n(n uint64) uint64 {
 	}
 	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
 	res, frac := bits.Mul64(n, r.next())
+	if frac <= -n {
+		return res
+	}
 	hi, _ := bits.Mul64(n, r.next())
 	_, carry := bits.Add64(frac, hi, 0)
 	return res + carry
