@@ -149,12 +149,27 @@ func (r *Rand) Intn(n int) int {
 // Perm returns, as a slice of n ints, a pseudo-random permutation of the integers in the half-open interval [0,n).
 func (r *Rand) Perm(n int) []int {
 	p := make([]int, n)
-	for i := 1; i < len(p); i++ {
+	r.perm(p)
+	return p
+}
+
+func (r *Rand) perm(p []int) {
+	n := len(p)
+	b := n
+	if b > math.MaxUint32 {
+		b = math.MaxUint32
+	}
+	i := 1
+	for ; i < b; i++ {
+		j := r.Uint32n(uint32(i) + 1)
+		p[i] = p[j]
+		p[j] = i
+	}
+	for ; i < n; i++ {
 		j := r.Uint64n(uint64(i) + 1)
 		p[i] = p[j]
 		p[j] = i
 	}
-	return p
 }
 
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
@@ -178,7 +193,6 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	if n < 0 {
 		panic("invalid argument to Shuffle")
 	}
-	// Uint64n is too big to be inlined, so call Uint32n explicitly when appropriate
 	i := n - 1
 	for ; i > math.MaxUint32-1; i-- {
 		j := int(r.Uint64n(uint64(i) + 1))
