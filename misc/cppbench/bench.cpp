@@ -5,6 +5,7 @@
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
 #include "nanobench.h"
+#include <cstdio>
 #include <cstdint>
 
 struct sfc64 {
@@ -37,6 +38,21 @@ uint32_t bound_fp_32x64(uint32_t n, uint64_t v) {
     return uint32_t(r >> 64);
 }
 
+uint32_t nearlydivisionless(uint32_t n, sfc64& s) {
+    uint32_t x = uint32_t(next(s));
+    uint64_t m = uint64_t(x) * uint64_t(n);
+    uint32_t l = uint32_t(m);
+    if (l < n) {
+        uint32_t t = -n % n;
+        while (l < t) {
+            x = uint32_t(next(s));
+            m = uint64_t(x) * uint64_t(n);
+            l = uint32_t(m);
+        }
+    }
+    return m >> 32;
+}
+
 int main() {
     ankerl::nanobench::Rng rng;
     uint32_t bound = rng();
@@ -55,7 +71,7 @@ int main() {
             uint32_t x = bound_fp_32x32(bound, val);
             b.doNotOptimizeAway(x);
         });
-        b.run("32x64 fixed point (unbiased)", [&]() {
+        b.run("32x64 fixed point (unbiased*)", [&]() {
             uint32_t x = bound_fp_32x64(bound, val);
             b.doNotOptimizeAway(x);
         });
@@ -78,8 +94,12 @@ int main() {
             uint32_t x = bound_fp_32x32(bound, next(s));
             b.doNotOptimizeAway(x);
         });
-        b.run("32x64 fixed point (unbiased)", [&]() {
+        b.run("32x64 fixed point (unbiased*)", [&]() {
             uint32_t x = bound_fp_32x64(bound, next(s));
+            b.doNotOptimizeAway(x);
+        });
+        b.run("Lemire's \"Nearly Divisionless\" (unbiased)", [&]() {
+            uint32_t x = nearlydivisionless(bound, s);
             b.doNotOptimizeAway(x);
         });
     }
