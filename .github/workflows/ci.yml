@@ -20,11 +20,20 @@ jobs:
           go-version: ${{ matrix.go }}
 
       - name: Run gofmt
-        run: test -z "$(go fmt .)"
+        run: test -z "$(go fmt ./...)"
         shell: bash
 
-      - name: Test
+      - name: Test pgregory.net/rand
         run: go test
 
-      - name: Bench
+      - name: Test practrand utility
+        run: go test ./misc/practrand
+
+      - name: Bench pgregory.net/rand
         run: go test -run=Benchmark -bench=.
+
+      - name: Bench math/rand
+        run: go test -tags=benchstd -run=Benchmark -bench=.
+
+      - name: Bench golang.org/x/exp/rand
+        run: go test -tags=benchexp -run=Benchmark -bench=.
