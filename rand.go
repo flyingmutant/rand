@@ -210,7 +210,7 @@ func (r *Rand) uint32_() uint64 {
 // Uint32n returns, as a uint32, a pseudo-random number in [0,n). Uint32n(0) returns 0.
 func (r *Rand) Uint32n(n uint32) uint32 {
 	// much faster 32-bit version of Uint64n(); result is unbiased with probability 1 - 2^-32.
-	// detecting possible bias would require about 2^64 samples, which we consider acceptable
+	// detecting possible bias would require at least 2^64 samples, which we consider acceptable
 	// since it matches 2^64 guarantees about period length and distance between different seeds
 	res, _ := bits.Mul64(uint64(n), r.next())
 	return uint32(res)
