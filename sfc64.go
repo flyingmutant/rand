@@ -24,7 +24,7 @@ func (s *sfc64) init(a uint64, b uint64, c uint64) {
 	s.c = c
 	s.w = 1
 	for i := 0; i < 12; i++ {
-		s.next()
+		s.next64()
 	}
 }
 
@@ -41,7 +41,7 @@ func (s *sfc64) init1(u uint64) {
 	s.c = u
 	s.w = 1
 	for i := 0; i < 12; i++ {
-		s.next()
+		s.next64()
 	}
 }
 
@@ -51,11 +51,11 @@ func (s *sfc64) init3(a uint64, b uint64, c uint64) {
 	s.c = c
 	s.w = 1
 	for i := 0; i < 18; i++ {
-		s.next()
+		s.next64()
 	}
 }
 
-func (s *sfc64) next() (out uint64) { // named return value lowers inlining cost
+func (s *sfc64) next64() (out uint64) { // named return value lowers inlining cost
 	out = s.a + s.b + s.w
 	s.w++
 	s.a, s.b, s.c = s.b^(s.b>>11), s.c+(s.c<<3), bits.RotateLeft64(s.c, 24)+out // single assignment lowers inlining cost

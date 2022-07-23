@@ -92,22 +92,22 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 
 // Float32 returns, as a float32, a pseudo-random number in the half-open interval [0.0,1.0).
 func (r *Rand) Float32() float32 {
-	return float32(r.uint32_()&int24Mask) * 0x1.0p-24
+	return float32(r.next32()&int24Mask) * 0x1.0p-24
 }
 
 // Float64 returns, as a float64, a pseudo-random number in the half-open interval [0.0,1.0).
 func (r *Rand) Float64() float64 {
-	return float64(r.next()&int53Mask) * 0x1.0p-53
+	return float64(r.next64()&int53Mask) * 0x1.0p-53
 }
 
 // Int returns a non-negative pseudo-random int.
 func (r *Rand) Int() int {
-	return int(r.next() & intMask)
+	return int(r.next64() & intMask)
 }
 
 // Int31 returns a non-negative pseudo-random 31-bit integer as an int32.
 func (r *Rand) Int31() int32 {
-	return int32(r.uint32_() & int31Mask)
+	return int32(r.next32() & int31Mask)
 }
 
 // Int31n returns, as an int32, a non-negative pseudo-random number in the half-open interval [0,n). It panics if n <= 0.
@@ -120,7 +120,7 @@ func (r *Rand) Int31n(n int32) int32 {
 
 // Int63 returns a non-negative pseudo-random 63-bit integer as an int64.
 func (r *Rand) Int63() int64 {
-	return int64(r.next() & int63Mask)
+	return int64(r.next64() & int63Mask)
 }
 
 // Int63n returns, as an int64, a non-negative pseudo-random number in the half-open interval [0,n). It panics if n <= 0.
@@ -170,7 +170,7 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 	val, pos := r.val, r.pos
 	for n = 0; n < len(p); n++ {
 		if pos == 0 {
-			val, pos = r.next(), 8
+			val, pos = r.next64(), 8
 		}
 		p[n] = byte(val)
 		val >>= 8
@@ -199,14 +199,14 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 
 // Uint32 returns a pseudo-random 32-bit value as a uint32.
 func (r *Rand) Uint32() uint32 {
-	return uint32(r.uint32_())
+	return uint32(r.next32())
 }
 
-// uint32_ has a bit lower inlining cost because of uint64 return value
-func (r *Rand) uint32_() uint64 {
+// next32 has a bit lower inlining cost because of uint64 return value
+func (r *Rand) next32() uint64 {
 	// unnatural code to fit into inlining budget of 80
 	if r.pos < 4 {
-		r.val, r.pos = r.next(), 4
+		r.val, r.pos = r.next64(), 4
 		return r.val >> 32
 	} else {
 		r.pos = 0
@@ -219,13 +219,13 @@ func (r *Rand) Uint32n(n uint32) uint32 {
 	// much faster 32-bit version of Uint64n(); result is unbiased with probability 1 - 2^-32.
 	// detecting possible bias would require at least 2^64 samples, which we consider acceptable
 	// since it matches 2^64 guarantees about period length and distance between different seeds
-	res, _ := bits.Mul64(uint64(n), r.next())
+	res, _ := bits.Mul64(uint64(n), r.next64())
 	return uint32(res)
 }
 
 // Uint64 returns a pseudo-random 64-bit value as a uint64.
 func (r *Rand) Uint64() uint64 {
-	return r.next()
+	return r.next64()
 }
 
 // Uint64n returns, as a uint64, a pseudo-random number in [0,n). Uint64n(0) returns 0.
@@ -234,11 +234,11 @@ func (r *Rand) Uint64n(n uint64) uint64 {
 		return uint64(r.Uint32n(uint32(n)))
 	}
 	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
-	res, frac := bits.Mul64(n, r.next())
+	res, frac := bits.Mul64(n, r.next64())
 	if frac <= -n {
 		return res
 	}
-	hi, _ := bits.Mul64(n, r.next())
+	hi, _ := bits.Mul64(n, r.next64())
 	_, carry := bits.Add64(frac, hi, 0)
 	return res + carry
 }

@@ -32,7 +32,7 @@ func TestSFC64_Zig(t *testing.T) {
 	s.init(0, 0, 0)
 
 	for i, u := range golden {
-		v := s.next()
+		v := s.next64()
 		if v != u {
 			t.Fatalf("got %v instead of %v at step %v", v, u, i)
 		}
@@ -1047,7 +1047,7 @@ func TestSFC64_NumPy_DEADBEAF(t *testing.T) {
 	s.init(5778446405158232650, 4639759349701729399, 13222832537653397986)
 
 	for i, u := range golden {
-		v := s.next()
+		v := s.next64()
 		if v != u {
 			t.Fatalf("got %v instead of %v at step %v", v, u, i)
 		}
@@ -2062,7 +2062,7 @@ func TestSFC64_NumPy_0(t *testing.T) {
 	s.init(15793235383387715774, 12390638538380655177, 2361836109651742017)
 
 	for i, u := range golden {
-		v := s.next()
+		v := s.next64()
 		if v != u {
 			t.Fatalf("got %v instead of %v at step %v", v, u, i)
 		}
