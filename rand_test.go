@@ -231,6 +231,23 @@ func BenchmarkRand_Uint64n_Big(b *testing.B) {
 	sinkUint64 = s
 }
 
+func BenchmarkRand_MarshalBinary(b *testing.B) {
+	b.ReportAllocs()
+	r := rand.New(1)
+	for i := 0; i < b.N; i++ {
+		_, _ = r.MarshalBinary()
+	}
+}
+
+func BenchmarkRand_UnmarshalBinary(b *testing.B) {
+	b.ReportAllocs()
+	r := rand.New(1)
+	buf, _ := r.MarshalBinary()
+	for i := 0; i < b.N; i++ {
+		_ = r.UnmarshalBinary(buf)
+	}
+}
+
 func TestRand_Float32(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		s := rapid.Uint64().Draw(t, "s").(uint64)

@@ -209,3 +209,20 @@ func BenchmarkRand_Uint64n_Big(b *testing.B) {
 	}
 	sinkUint64 = s
 }
+
+func BenchmarkRand_MarshalBinary(b *testing.B) {
+	b.ReportAllocs()
+	r := rand.NewSource(1).(*rand.PCGSource)
+	for i := 0; i < b.N; i++ {
+		_, _ = r.MarshalBinary()
+	}
+}
+
+func BenchmarkRand_UnmarshalBinary(b *testing.B) {
+	b.ReportAllocs()
+	r := rand.NewSource(1).(*rand.PCGSource)
+	buf, _ := r.MarshalBinary()
+	for i := 0; i < b.N; i++ {
+		_ = r.UnmarshalBinary(buf)
+	}
+}
