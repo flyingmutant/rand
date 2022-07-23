@@ -96,12 +96,12 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// Float32 returns, as a float32, a pseudo-random number in the half-open interval [0.0,1.0).
+// Float32 returns, as a float32, a pseudo-random number in the half-open interval [0.0, 1.0).
 func (r *Rand) Float32() float32 {
 	return float32(r.next32()&int24Mask) * 0x1.0p-24
 }
 
-// Float64 returns, as a float64, a pseudo-random number in the half-open interval [0.0,1.0).
+// Float64 returns, as a float64, a pseudo-random number in the half-open interval [0.0, 1.0).
 func (r *Rand) Float64() float64 {
 	return float64(r.next64()&int53Mask) * 0x1.0p-53
 }
@@ -116,7 +116,7 @@ func (r *Rand) Int31() int32 {
 	return int32(r.next32() & int31Mask)
 }
 
-// Int31n returns, as an int32, a non-negative pseudo-random number in the half-open interval [0,n). It panics if n <= 0.
+// Int31n returns, as an int32, a non-negative pseudo-random number in the half-open interval [0, n). It panics if n <= 0.
 func (r *Rand) Int31n(n int32) int32 {
 	if n <= 0 {
 		panic("invalid argument to Int31n")
@@ -129,7 +129,7 @@ func (r *Rand) Int63() int64 {
 	return int64(r.next64() & int63Mask)
 }
 
-// Int63n returns, as an int64, a non-negative pseudo-random number in the half-open interval [0,n). It panics if n <= 0.
+// Int63n returns, as an int64, a non-negative pseudo-random number in the half-open interval [0, n). It panics if n <= 0.
 func (r *Rand) Int63n(n int64) int64 {
 	if n <= 0 {
 		panic("invalid argument to Int63n")
@@ -137,7 +137,7 @@ func (r *Rand) Int63n(n int64) int64 {
 	return int64(r.Uint64n(uint64(n)))
 }
 
-// Intn returns, as an int, a non-negative pseudo-random number in the half-open interval [0,n). It panics if n <= 0.
+// Intn returns, as an int, a non-negative pseudo-random number in the half-open interval [0, n). It panics if n <= 0.
 func (r *Rand) Intn(n int) int {
 	if n <= 0 {
 		panic("invalid argument to Intn")
@@ -145,7 +145,7 @@ func (r *Rand) Intn(n int) int {
 	return int(r.Uint64n(uint64(n)))
 }
 
-// Perm returns, as a slice of n ints, a pseudo-random permutation of the integers in the half-open interval [0,n).
+// Perm returns, as a slice of n ints, a pseudo-random permutation of the integers in the half-open interval [0, n).
 func (r *Rand) Perm(n int) []int {
 	p := make([]int, n)
 	r.perm(p)
@@ -220,7 +220,7 @@ func (r *Rand) next32() uint64 {
 	}
 }
 
-// Uint32n returns, as a uint32, a pseudo-random number in [0,n). Uint32n(0) returns 0.
+// Uint32n returns, as a uint32, a pseudo-random number in [0, n). Uint32n(0) returns 0.
 func (r *Rand) Uint32n(n uint32) uint32 {
 	// much faster 32-bit version of Uint64n(); result is unbiased with probability 1 - 2^-32.
 	// detecting possible bias would require at least 2^64 samples, which we consider acceptable
@@ -234,7 +234,7 @@ func (r *Rand) Uint64() uint64 {
 	return r.next64()
 }
 
-// Uint64n returns, as a uint64, a pseudo-random number in [0,n). Uint64n(0) returns 0.
+// Uint64n returns, as a uint64, a pseudo-random number in [0, n). Uint64n(0) returns 0.
 func (r *Rand) Uint64n(n uint64) uint64 {
 	if n <= math.MaxUint32 {
 		return uint64(r.Uint32n(uint32(n)))
