@@ -181,6 +181,7 @@ func BenchmarkRand_ShuffleOverhead(b *testing.B) {
 func BenchmarkRand_Uint32(b *testing.B) {
 	var s uint32
 	r := rand.New(1)
+	b.SetBytes(4)
 	for i := 0; i < b.N; i++ {
 		s = r.Uint32()
 	}
@@ -208,6 +209,7 @@ func BenchmarkRand_Uint32n_Big(b *testing.B) {
 func BenchmarkRand_Uint64(b *testing.B) {
 	var s uint64
 	r := rand.New(1)
+	b.SetBytes(8)
 	for i := 0; i < b.N; i++ {
 		s = r.Uint64()
 	}
