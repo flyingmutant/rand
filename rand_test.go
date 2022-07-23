@@ -149,6 +149,7 @@ func BenchmarkRand_Perm(b *testing.B) {
 func BenchmarkRand_Read(b *testing.B) {
 	r := rand.New(1)
 	p := make([]byte, 256)
+	b.SetBytes(int64(len(p)))
 	for i := 0; i < b.N; i++ {
 		_, _ = r.Read(p[:])
 	}
