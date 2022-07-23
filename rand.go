@@ -4,6 +4,12 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
+// Package rand implements pseudo-random number generators unsuitable for
+// security-sensitive work.
+//
+// This package's outputs might be easily predictable regardless of how it's
+// seeded. For random numbers suitable for security-sensitive work, see the
+// crypto/rand package.
 package rand
 
 import (
