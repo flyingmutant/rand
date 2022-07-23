@@ -7,9 +7,10 @@
 // Package rand implements pseudo-random number generators unsuitable for
 // security-sensitive work.
 //
-// This package's outputs might be easily predictable regardless of how it's
-// seeded. For random numbers suitable for security-sensitive work, see the
-// crypto/rand package.
+// This package is considerably faster and generates higher quality random
+// than the math/rand package. However, this package's outputs might be
+// easily predictable regardless of how it's seeded. For random numbers
+// suitable for security-sensitive work, see the crypto/rand package.
 package rand
 
 import (
