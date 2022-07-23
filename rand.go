@@ -143,7 +143,11 @@ func (r *Rand) Intn(n int) int {
 	if n <= 0 {
 		panic("invalid argument to Intn")
 	}
-	return int(r.Uint64n(uint64(n)))
+	if math.MaxInt == math.MaxInt32 {
+		return int(r.Uint32n(uint32(n)))
+	} else {
+		return int(r.Uint64n(uint64(n)))
+	}
 }
 
 // Perm returns, as a slice of n ints, a pseudo-random permutation of the integers in the half-open interval [0, n).
