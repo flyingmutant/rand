@@ -81,6 +81,15 @@ func BenchmarkRand_Int31n(b *testing.B) {
 	sinkInt32 = s
 }
 
+func BenchmarkRand_Int31n_Big(b *testing.B) {
+	var s int32
+	r := rand.New(rand.NewSource(1))
+	for i := 0; i < b.N; i++ {
+		s = r.Int31n(math.MaxInt32 - small)
+	}
+	sinkInt32 = s
+}
+
 func BenchmarkRand_Int63(b *testing.B) {
 	var s int64
 	r := rand.New(rand.NewSource(1))
@@ -99,11 +108,29 @@ func BenchmarkRand_Int63n(b *testing.B) {
 	sinkInt64 = s
 }
 
+func BenchmarkRand_Int63n_Big(b *testing.B) {
+	var s int64
+	r := rand.New(rand.NewSource(1))
+	for i := 0; i < b.N; i++ {
+		s = r.Int63n(math.MaxInt64 - small)
+	}
+	sinkInt64 = s
+}
+
 func BenchmarkRand_Intn(b *testing.B) {
 	var s int
 	r := rand.New(rand.NewSource(1))
 	for i := 0; i < b.N; i++ {
 		s = r.Intn(small)
+	}
+	sinkInt = s
+}
+
+func BenchmarkRand_Intn_Big(b *testing.B) {
+	var s int
+	r := rand.New(rand.NewSource(1))
+	for i := 0; i < b.N; i++ {
+		s = r.Intn(math.MaxInt - small)
 	}
 	sinkInt = s
 }
@@ -165,24 +192,6 @@ func BenchmarkRand_Uint32(b *testing.B) {
 		s = r.Uint32()
 	}
 	sinkUint32 = s
-}
-
-func BenchmarkRand_Uint32n(b *testing.B) {
-	var s int32
-	r := rand.New(rand.NewSource(1))
-	for i := 0; i < b.N; i++ {
-		s = r.Int31n(small) // no Uint32n
-	}
-	sinkInt32 = s
-}
-
-func BenchmarkRand_Uint32n_Big(b *testing.B) {
-	var s int32
-	r := rand.New(rand.NewSource(1))
-	for i := 0; i < b.N; i++ {
-		s = r.Int31n(math.MaxInt32 - small) // no Uint32n
-	}
-	sinkInt32 = s
 }
 
 func BenchmarkRand_Uint64(b *testing.B) {
