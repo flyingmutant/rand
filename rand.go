@@ -18,6 +18,7 @@ const (
 	int31Mask = 1<<31 - 1
 	int53Mask = 1<<53 - 1
 	int63Mask = 1<<63 - 1
+	intMask   = math.MaxInt
 
 	randSizeof = 8*4 + 8 + 1
 )
@@ -101,11 +102,7 @@ func (r *Rand) Float64() float64 {
 
 // Int returns a non-negative pseudo-random int.
 func (r *Rand) Int() int {
-	if math.MaxInt == math.MaxInt32 {
-		return int(r.uint32_() & int31Mask)
-	} else {
-		return int(r.next() & int63Mask)
-	}
+	return int(r.next() & intMask)
 }
 
 // Int31 returns a non-negative pseudo-random 31-bit integer as an int32.
@@ -139,11 +136,7 @@ func (r *Rand) Intn(n int) int {
 	if n <= 0 {
 		panic("invalid argument to Intn")
 	}
-	if math.MaxInt == math.MaxInt32 {
-		return int(r.Uint32n(uint32(n)))
-	} else {
-		return int(r.Uint64n(uint64(n)))
-	}
+	return int(r.Uint64n(uint64(n)))
 }
 
 // Perm returns, as a slice of n ints, a pseudo-random permutation of the integers in the half-open interval [0,n).
