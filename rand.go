@@ -182,17 +182,23 @@ func (r *Rand) perm(p []int) {
 
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
-	b := len(p) & (^7)
-	for n = 0; n < b; n += 8 {
-		binary.LittleEndian.PutUint64(p[n:n+8], r.next64())
-	}
-	for ; n < len(p); n++ {
-		if r.pos == 0 {
-			r.val, r.pos = r.next64(), 8
-		}
+	pos := int(r.pos)
+	for ; n < len(p) && n < pos; n++ {
 		p[n] = byte(r.val)
 		r.val >>= 8
 		r.pos--
+	}
+	b := (len(p) - n) & (^7)
+	for ; n < b; n += 8 {
+		binary.LittleEndian.PutUint64(p[n:n+8], r.next64())
+	}
+	if n < len(p) {
+		r.val, r.pos = r.next64(), 8
+		for ; n < len(p); n++ {
+			p[n] = byte(r.val)
+			r.val >>= 8
+			r.pos--
+		}
 	}
 	return
 }
