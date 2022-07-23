@@ -7,7 +7,7 @@
 package rand_test
 
 const (
-	tiny  = 100
+	tiny  = 52
 	small = 1000
 )
 
