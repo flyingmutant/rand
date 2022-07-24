@@ -57,7 +57,8 @@ Rand_Uint32-8            680MB/s ± 4%  1418MB/s ± 1%  +108.36%  (p=0.000 n=9+9
 Rand_Uint64-8            922MB/s ± 2%  1869MB/s ±10%  +102.73%  (p=0.000 n=10+10)
 ```
 
-Compared to [golang.org/x/exp/rand](https://pkg.go.dev/golang.org/x/exp/rand):
+<details>
+<summary>Compared to <a href="https://pkg.go.dev/golang.org/x/exp/rand">golang.org/x/exp/rand</a>:</summary>
 
 ```
 name                    old time/op    new time/op    delta
@@ -104,6 +105,7 @@ Rand_Read-8              541MB/s ± 2%  1903MB/s ± 1%  +251.62%  (p=0.000 n=10+
 Rand_Uint32-8            574MB/s ± 1%  1418MB/s ± 1%  +147.16%  (p=0.000 n=9+9)
 Rand_Uint64-8           1.15GB/s ± 1%  1.87GB/s ±10%   +63.23%  (p=0.000 n=9+10)
 ```
+</details>
 
 ## FAQ
 
