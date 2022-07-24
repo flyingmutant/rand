@@ -105,6 +105,75 @@ Rand_Uint32-8            574MB/s ± 1%  1418MB/s ± 1%  +147.16%  (p=0.000 n=9+9
 Rand_Uint64-8           1.15GB/s ± 1%  1.87GB/s ±10%   +63.23%  (p=0.000 n=9+10)
 ```
 
+## FAQ
+
+### Why did you write this?
+
+`math/rand` is both slow and [not up to standards](https://gist.github.com/flyingmutant/ad5841f5e594aa8687fe47de34985e6a)
+in terms of quality (but can not be changed because of Go 1 compatibility promise).
+`golang.org/x/exp/rand` improves the quality, but does not improve the speed,
+and it seems that there is no active development happening there.
+
+### How does this thing work?
+
+This package builds on 3 primitives: raw 64-bit generation using `sfc64`, floating-point
+generation using floating-point multiplication, and integer generation in range using
+32.64 or 64.128 fixed-point multiplication.
+
+### Why is it fast?
+
+The primitives selected are (as far as I am aware) about as fast as you can go
+without sacrificing quality. On top of that, it is mainly making sure the compiler
+is able to inline code, and a couple of micro-optimizations.
+
+### Why no `Source`?
+
+In Go (but not in C++ or Rust) it is a costly abstraction that provides no real value.
+How often do you use a non-default `Source` with `math/rand`?
+
+### Why no top-level functions?
+
+Dislike for global mutable state. Also, without some kind of thread-local state they are
+very slow (because global state needs to be mutex-protected). If you like the
+convenience of top-level functions, `math/rand` is a fine choice.
+
+### Why `sfc64`?
+
+I like it. It has withstood the test of time, with no known flaws or weaknesses despite
+a lot of effort and CPU-hours spent on finding them. Also, it provides guarantees about period
+length and distance between generators seeded with different seeds. And it is fast.
+
+### Why not...
+
+#### ...`pcg`?
+
+A bit slow. Otherwise, [`pcg64dxsm`](https://numpy.org/devdocs/reference/random/bit_generators/pcg64dxsm.html)
+is probably a fine choice.
+
+#### ...`xoshiro`/`xoroshiro`?
+
+Quite a bit of controversy and people finding weaknesses in variants of this design.
+Did you know that `xoshiro256**`, which author describes as an "all-purpose, rock-solid generator"
+that "passes all tests we are aware of", fails them in seconds if you multiply the output by 57?
+
+#### ...`splitmix`?
+
+With 64-bit state and 64-bit output, `splitmix64` outputs every 64-bit number exactly once
+over its 2^64 period — in other words, the probability of generating the same number is 0.
+A [birthday test](https://www.pcg-random.org/posts/birthday-test.html) will quickly find
+this problem.
+
+#### ...`wyrand`?
+
+An excellent generator if you are OK with slightly lower quality. Because its output function
+(unlike `splitmix`) is not a bijection, some outputs are more likely to appear than others.
+You can easily observe this non-uniformity with
+a [birthday test](https://gist.github.com/flyingmutant/cb69e96872023f9f580868e746d1128a).
+
+#### ...`romu`?
+
+Very fast, but relatively new and untested. Also, no guarantees about the period length.
+
 ## Status
 
 `pgregory.net/rand` is alpha software. API breakage and bugs should be expected before 1.0.
