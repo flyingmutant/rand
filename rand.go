@@ -253,9 +253,6 @@ func (r *Rand) Uint64() uint64 {
 
 // Uint64n returns, as a uint64, a pseudo-random number in [0, n). Uint64n(0) returns 0.
 func (r *Rand) Uint64n(n uint64) uint64 {
-	if n <= math.MaxUint32 {
-		return uint64(r.Uint32n(uint32(n)))
-	}
 	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
 	res, frac := bits.Mul64(n, r.next64())
 	if frac <= -n {
