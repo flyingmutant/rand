@@ -9,7 +9,7 @@
 //
 // This package is considerably faster and generates higher quality random
 // than the math/rand package. However, this package's outputs might be
-// easily predictable regardless of how it's seeded. For random numbers
+// predictable regardless of how it's seeded. For random numbers
 // suitable for security-sensitive work, see the crypto/rand package.
 package rand
 
