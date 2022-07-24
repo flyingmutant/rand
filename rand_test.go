@@ -278,6 +278,26 @@ func BenchmarkRand_UnmarshalBinary(b *testing.B) {
 	}
 }
 
+func TestRand_Read(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		const N = 32
+		s := rapid.Uint64().Draw(t, "s").(uint64)
+		r := rand.New(s)
+		buf := make([]byte, N)
+		_, _ = r.Read(buf)
+		r.Seed(s)
+		buf2 := make([]byte, N)
+		for n := 0; n < N; {
+			c := rapid.IntRange(0, N-n).Draw(t, "c").(int)
+			_, _ = r.Read(buf2[n : n+c])
+			n += c
+		}
+		if !bytes.Equal(buf, buf2) {
+			t.Fatalf("got %q instead of %q when reading in chunks", buf2, buf)
+		}
+	})
+}
+
 func TestRand_Float32(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		s := rapid.Uint64().Draw(t, "s").(uint64)
