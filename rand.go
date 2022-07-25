@@ -220,7 +220,7 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	}
 }
 
-// Uint32 returns a pseudo-random 32-bit value as a uint32.
+// Uint32 returns a pseudo-random 32-bit value as an uint32.
 func (r *Rand) Uint32() uint32 {
 	return uint32(r.next32())
 }
@@ -237,11 +237,14 @@ func (r *Rand) next32() uint64 {
 	}
 }
 
-// Uint32n returns, as a uint32, a pseudo-random number in [0, n). Uint32n(0) returns 0.
+// Uint32n returns, as an uint32, a pseudo-random number in [0, n). Uint32n(0) returns 0.
 func (r *Rand) Uint32n(n uint32) uint32 {
 	// much faster 32-bit version of Uint64n(); result is unbiased with probability 1 - 2^-32.
 	// detecting possible bias would require at least 2^64 samples, which we consider acceptable
-	// since it matches 2^64 guarantees about period length and distance between different seeds
+	// since it matches 2^64 guarantees about period length and distance between different seeds.
+	// note that 2^64 is probably a very conservative estimate: scaled down 16-bit version of this
+	// algorithm passes chi-squared test for at least 2^42 (instead of 2^32) values, so
+	// 32-bit version will likely require north of 2^80 values to detect non-uniformity.
 	res, _ := bits.Mul64(uint64(n), r.next64())
 	return uint32(res)
 }
@@ -251,7 +254,7 @@ func (r *Rand) Uint64() uint64 {
 	return r.next64()
 }
 
-// Uint64n returns, as a uint64, a pseudo-random number in [0, n). Uint64n(0) returns 0.
+// Uint64n returns, as an uint64, a pseudo-random number in [0, n). Uint64n(0) returns 0.
 func (r *Rand) Uint64n(n uint64) uint64 {
 	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
 	res, frac := bits.Mul64(n, r.next64())
