@@ -180,6 +180,68 @@ func (r *Rand) perm(p []int) {
 	}
 }
 
+// Sample returns, as a slice of k ints, a pseudo-random sample without replacement of k integers from the half-open interval [0, n).
+// Sample panics if k > n. Sample executes in O(k) time.
+//
+// The returned sample is not a pseudo-random permutation, as the order of the returned integers is not random.
+// To produce a random order, Shuffle the result. For k = n, Perm is more efficient than Sample followed by Shuffle.
+func (r *Rand) Sample(k int, n int) []int {
+	if k > n {
+		panic("invalid argument to Sample")
+	}
+	s := make([]int, k)
+	r.sample(s, n)
+	return s
+}
+
+func (r *Rand) sample(s []int, n int) {
+	// Floyd's sampling algorithm, https://dl.acm.org/doi/pdf/10.1145/30401.315746
+	k := len(s)
+	var m map[int]struct{}
+	const maxLinear = 128 // surprisingly high
+	for i := 0; i < k; i++ {
+		j := n - k + i
+		t := r.Intn(j + 1)
+		var hasT bool
+		switch {
+		case i < maxLinear:
+			hasT = in(s[:i], t)
+		case m == nil:
+			hasT, m = inM(s[:i], t, k)
+		default:
+			_, hasT = m[t]
+		}
+		if hasT {
+			t = j
+		}
+		s[i] = t
+		if m != nil {
+			m[t] = struct{}{}
+		}
+	}
+}
+
+func in(s []int, t int) bool {
+	for i := 0; i < len(s); i++ {
+		if s[i] == t {
+			return true
+		}
+	}
+	return false
+}
+
+func inM(s []int, t int, k int) (found bool, m map[int]struct{}) {
+	m = make(map[int]struct{}, k)
+	for i := 0; i < len(s); i++ {
+		e := s[i]
+		m[e] = struct{}{}
+		if e == t {
+			found = true
+		}
+	}
+	return
+}
+
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
 	pos := int(r.pos)
