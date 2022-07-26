@@ -516,6 +516,17 @@ func TestUniformFactorial(t *testing.T) {
 					r.Shuffle(n, func(i, j int) { p[i], p[j] = p[j], p[i] })
 					return encodePerm(p)
 				}},
+				{name: "ShuffleGeneric", fn: func() int {
+					if ShuffleGeneric == nil {
+						return int(r.Uint32n(uint32(nfact)))
+					}
+					// Generate permutation using generic Shuffle.
+					for i := range p {
+						p[i] = i
+					}
+					ShuffleGeneric(r, p)
+					return encodePerm(p)
+				}},
 			}
 
 			for _, test := range tests {

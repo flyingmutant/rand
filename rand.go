@@ -205,6 +205,8 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 
 // Shuffle pseudo-randomizes the order of elements. n is the number of elements. Shuffle panics if n < 0.
 // swap swaps the elements with indexes i and j.
+//
+// For shuffling elements of a slice, prefer the top-level Shuffle function.
 func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	if n < 0 {
 		panic("invalid argument to Shuffle")
