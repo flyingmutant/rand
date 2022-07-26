@@ -164,8 +164,8 @@ func (r *Rand) Perm(n int) []int {
 func (r *Rand) perm(p []int) {
 	n := len(p)
 	b := n
-	if b > math.MaxUint32 {
-		b = math.MaxUint32
+	if b > math.MaxInt32 {
+		b = math.MaxInt32
 	}
 	i := 1
 	for ; i < b; i++ {
@@ -210,7 +210,7 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 		panic("invalid argument to Shuffle")
 	}
 	i := n - 1
-	for ; i > math.MaxUint32-1; i-- {
+	for ; i > math.MaxInt32-1; i-- {
 		j := int(r.Uint64n(uint64(i) + 1))
 		swap(i, j)
 	}
