@@ -10,7 +10,6 @@ package rand_test
 
 import (
 	"bytes"
-	"fmt"
 	"math"
 	"math/bits"
 	"pgregory.net/rand"
@@ -174,28 +173,6 @@ func BenchmarkRand_Perm(b *testing.B) {
 	}
 }
 
-func BenchmarkRand_Sample(b *testing.B) {
-	for _, t := range []struct {
-		k int
-		n int
-	}{
-		{6, tiny},
-		{tiny, tiny},
-		{tiny, small},
-		{128, small},
-		{256, small},
-		{small, small},
-	} {
-		b.Run(fmt.Sprintf("%v/%v", t.k, t.n), func(b *testing.B) {
-			r := rand.New(1)
-			b.ReportAllocs()
-			for i := 0; i < b.N; i++ {
-				r.Sample(t.k, t.n)
-			}
-		})
-	}
-}
-
 func BenchmarkRand_Read(b *testing.B) {
 	r := rand.New(1)
 	p := make([]byte, 256)
@@ -317,29 +294,6 @@ func TestRand_Read(t *testing.T) {
 		}
 		if !bytes.Equal(buf, buf2) {
 			t.Fatalf("got %q instead of %q when reading in chunks", buf2, buf)
-		}
-	})
-}
-
-func TestRand_Sample(t *testing.T) {
-	rapid.Check(t, func(t *rapid.T) {
-		s := rapid.Uint64().Draw(t, "s").(uint64)
-		r := rand.New(s)
-		n := rapid.IntRange(0, tiny).Draw(t, "n").(int)
-		k := rapid.IntRange(0, n).Draw(t, "k").(int)
-		p := r.Sample(k, n)
-		if len(p) != k {
-			t.Fatalf("got %v elements instead of %v", len(p), k)
-		}
-		seen := map[int]bool{}
-		for i, e := range p {
-			if e < 0 || e >= n {
-				t.Fatalf("got out of range element %v at %v", e, i)
-			}
-			if seen[e] {
-				t.Fatalf("got a duplicate of %v at %v", e, i)
-			}
-			seen[e] = true
 		}
 	})
 }
