@@ -38,7 +38,7 @@ const (
 type Rand struct {
 	sfc64
 	val uint64
-	pos int8
+	pos int
 }
 
 // New returns an initialized generator. If seed is empty, generator is initialized to a non-deterministic state.
@@ -97,7 +97,7 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 	r.c = binary.LittleEndian.Uint64(data[16:])
 	r.w = binary.LittleEndian.Uint64(data[24:])
 	r.val = binary.LittleEndian.Uint64(data[32:])
-	r.pos = int8(data[40])
+	r.pos = int(data[40])
 	return nil
 }
 
@@ -244,7 +244,7 @@ func inM(s []int, t int, k int) (found bool, m map[int]struct{}) {
 
 // Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
-	pos := int(r.pos)
+	pos := r.pos
 	for ; n < len(p) && n < pos; n++ {
 		p[n] = byte(r.val)
 		r.val >>= 8
