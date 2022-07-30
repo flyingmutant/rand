@@ -9,7 +9,9 @@
 package rand_test
 
 import (
+	"bytes"
 	"pgregory.net/rand"
+	"pgregory.net/rapid"
 	"testing"
 )
 
@@ -19,4 +21,24 @@ func BenchmarkShuffle(b *testing.B) {
 	for i := 0; i < b.N; i++ {
 		rand.Shuffle(r, a)
 	}
+}
+
+func TestShuffle(t *testing.T) {
+	rapid.Check(t, func(t *rapid.T) {
+		s := rapid.Uint64().Draw(t, "s").(uint64)
+		r := rand.New(s)
+		n := rapid.IntRange(0, small).Draw(t, "n").(int)
+		buf1 := make([]byte, n)
+		_, _ = r.Read(buf1)
+		buf2 := append([]byte(nil), buf1...)
+		r.Seed(s)
+		r.Shuffle(n, func(i, j int) {
+			buf1[i], buf1[j] = buf1[j], buf1[i]
+		})
+		r.Seed(s)
+		rand.Shuffle(r, buf2)
+		if !bytes.Equal(buf1, buf2) {
+			t.Fatalf("shuffle results differ: %q vs %q", buf1, buf2)
+		}
+	})
 }
