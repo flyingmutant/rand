@@ -251,7 +251,7 @@ func initNorm() (testKn []uint64, testWn, testFn []float64) {
 
 func initExp() (testKe []uint64, testWe, testFe []float64) {
 	const (
-		m2 = 1 << 32
+		m2 = 1 << 53
 		ve = 0.0039496598225815571993
 	)
 	var (
