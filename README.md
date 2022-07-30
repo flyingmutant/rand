@@ -5,7 +5,7 @@ Fast, high quality alternative to `math/rand` and `golang.org/x/exp/rand`.
 Compared to these packages, `pgregory.net/rand`:
 
 - is API-compatible with all `*rand.Rand` methods,
-- is significantly faster, while providing state-of-the-art generator quality,
+- is significantly faster, while improving the generator quality,
 - has simpler generator initialization:
   - `rand.New()` instead of `rand.New(rand.NewSource(time.Now().UnixNano()))`
   - `rand.New(1)` instead of `rand.New(rand.NewSource(1))`
