@@ -14,6 +14,8 @@ import (
  * See "The Ziggurat Method for Generating Random Variables"
  * (Marsaglia & Tsang, 2000)
  * https://www.jstatsoft.org/v05/i08/paper [pdf]
+ *
+ * Fixed correlation, see https://github.com/flyingmutant/rand/issues/3
  */
 
 const (
@@ -30,8 +32,9 @@ const (
 //
 func (r *Rand) ExpFloat64() float64 {
 	for {
-		j := uint64(r.Uint32())
-		i := j & 0xFF
+		v := r.Uint64()
+		j := uint64(uint32(v >> 8))
+		i := v & 0xFF
 		x := float64(j) * we[i]
 		if j < ke[i] {
 			return x

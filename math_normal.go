@@ -14,6 +14,8 @@ import (
  * See "The Ziggurat Method for Generating Random Variables"
  * (Marsaglia & Tsang, 2000)
  * http://www.jstatsoft.org/v05/i08/paper [pdf]
+ *
+ * Fixed correlation, see https://github.com/flyingmutant/rand/issues/3
  */
 
 const (
@@ -37,8 +39,9 @@ func absInt64(i int64) uint64 {
 //
 func (r *Rand) NormFloat64() float64 {
 	for {
-		j := int64(int32(r.Uint32())) // Possibly negative
-		i := j & 0x7F
+		v := r.Uint64()
+		j := int64(int32(uint32(v >> 8))) // Possibly negative
+		i := v & 0x7F
 		x := float64(j) * wn[i]
 		if absInt64(j) < kn[i] {
 			// This case should be hit better than 99% of the time.
