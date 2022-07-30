@@ -48,7 +48,7 @@ func nearEqual(a, b, closeEnough, maxError float64) bool {
 	if absDiff < closeEnough { // Necessary when one value is zero and one value is close to zero.
 		return true
 	}
-	return absDiff/max(math.Abs(a), math.Abs(b)) < maxError
+	return absDiff/(max(math.Abs(a), math.Abs(b))+math.SmallestNonzeroFloat64) < maxError
 }
 
 var testSeeds = []int64{1, 1754801282, 1698661970, 1550503961}
@@ -282,7 +282,7 @@ func initExp() (testKe []uint64, testWe, testFe []float64) {
 
 // compareUint64Slices returns the first index where the two slices
 // disagree, or <0 if the lengths are the same and all elements
-// are identical.
+// are close to each other.
 func compareUint64Slices(s1, s2 []uint64) int {
 	if len(s1) != len(s2) {
 		if len(s1) > len(s2) {
@@ -291,7 +291,7 @@ func compareUint64Slices(s1, s2 []uint64) int {
 		return len(s1) + 1
 	}
 	for i := range s1 {
-		if s1[i] != s2[i] {
+		if !nearEqual(float64(s1[i]), float64(s2[i]), 0, 1e-12) {
 			return i
 		}
 	}
@@ -300,7 +300,7 @@ func compareUint64Slices(s1, s2 []uint64) int {
 
 // compareFloat64Slices returns the first index where the two slices
 // disagree, or <0 if the lengths are the same and all elements
-// are identical.
+// are close to each other.
 func compareFloat64Slices(s1, s2 []float64) int {
 	if len(s1) != len(s2) {
 		if len(s1) > len(s2) {
@@ -309,7 +309,7 @@ func compareFloat64Slices(s1, s2 []float64) int {
 		return len(s1) + 1
 	}
 	for i := range s1 {
-		if !nearEqual(s1[i], s2[i], 0, 1e-17) {
+		if !nearEqual(s1[i], s2[i], 0, 1e-12) {
 			return i
 		}
 	}
