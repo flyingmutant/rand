@@ -30,7 +30,7 @@ const (
 //
 func (r *Rand) ExpFloat64() float64 {
 	for {
-		j := r.Uint32()
+		j := uint64(r.Uint32())
 		i := j & 0xFF
 		x := float64(j) * we[i]
 		if j < ke[i] {
@@ -45,7 +45,7 @@ func (r *Rand) ExpFloat64() float64 {
 	}
 }
 
-var ke = [256]uint32{
+var ke = [256]uint64{
 	0xe290a139, 0x0, 0x9beadebc, 0xc377ac71, 0xd4ddb990,
 	0xde893fb8, 0xe4a8e87c, 0xe8dff16a, 0xebf2deab, 0xee49a6e8,
 	0xf0204efd, 0xf19bdb8e, 0xf2d458bb, 0xf3da104b, 0xf4b86d78,

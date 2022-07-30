@@ -20,11 +20,11 @@ const (
 	rn = 3.442619855899
 )
 
-func absInt32(i int32) uint32 {
+func absInt64(i int64) uint64 {
 	if i < 0 {
-		return uint32(-i)
+		return uint64(-i)
 	}
-	return uint32(i)
+	return uint64(i)
 }
 
 // NormFloat64 returns a normally distributed float64 in
@@ -37,10 +37,10 @@ func absInt32(i int32) uint32 {
 //
 func (r *Rand) NormFloat64() float64 {
 	for {
-		j := int32(r.Uint32()) // Possibly negative
+		j := int64(int32(r.Uint32())) // Possibly negative
 		i := j & 0x7F
 		x := float64(j) * wn[i]
-		if absInt32(j) < kn[i] {
+		if absInt64(j) < kn[i] {
 			// This case should be hit better than 99% of the time.
 			return x
 		}
@@ -65,7 +65,7 @@ func (r *Rand) NormFloat64() float64 {
 	}
 }
 
-var kn = [128]uint32{
+var kn = [128]uint64{
 	0x76ad2212, 0x0, 0x600f1b53, 0x6ce447a6, 0x725b46a2,
 	0x7560051d, 0x774921eb, 0x789a25bd, 0x799045c3, 0x7a4bce5d,
 	0x7adf629f, 0x7b5682a6, 0x7bb8a8c6, 0x7c0ae722, 0x7c50cce7,
