@@ -7,6 +7,7 @@ package rand_test
 import (
 	"bytes"
 	"errors"
+	"flag"
 	"fmt"
 	"io"
 	"math"
@@ -19,6 +20,10 @@ import (
 
 const (
 	numTestSamples = 10000
+)
+
+var (
+	printtables = flag.Bool("printtables", false, "print ziggurat tables")
 )
 
 var rn, kn, wn, fn = GetNormalDistributionParameters()
@@ -214,11 +219,13 @@ func TestNonStandardExponentialValues(t *testing.T) {
 //
 
 func initNorm() (testKn []uint32, testWn, testFn []float32) {
-	const m1 = 1 << 31
+	const (
+		m1 = 1 << 31
+		vn = 0.00991256303526217
+	)
 	var (
-		dn float64 = rn
-		tn         = dn
-		vn float64 = 9.91256303526217e-3
+		dn = rn
+		tn = dn
 	)
 
 	testKn = make([]uint32, 128)
@@ -243,11 +250,13 @@ func initNorm() (testKn []uint32, testWn, testFn []float32) {
 }
 
 func initExp() (testKe []uint32, testWe, testFe []float32) {
-	const m2 = 1 << 32
+	const (
+		m2 = 1 << 32
+		ve = 0.0039496598225815571993
+	)
 	var (
-		de float64 = re
-		te         = de
-		ve float64 = 3.9496598225815571993e-3
+		de = re
+		te = de
 	)
 
 	testKe = make([]uint32, 256)
@@ -309,6 +318,13 @@ func compareFloat32Slices(s1, s2 []float32) int {
 
 func TestNormTables(t *testing.T) {
 	testKn, testWn, testFn := initNorm()
+	if *printtables {
+		fmt.Printf("var kn = %#v\n", testKn)
+		fmt.Printf("var wn = %#v\n", testWn)
+		fmt.Printf("var fn = %#v\n", testFn)
+		return
+	}
+
 	if i := compareUint32Slices(kn[0:], testKn); i >= 0 {
 		t.Errorf("kn disagrees at index %v; %v != %v", i, kn[i], testKn[i])
 	}
@@ -322,6 +338,13 @@ func TestNormTables(t *testing.T) {
 
 func TestExpTables(t *testing.T) {
 	testKe, testWe, testFe := initExp()
+	if *printtables {
+		fmt.Printf("var ke = %#v\n", testKe)
+		fmt.Printf("var we = %#v\n", testWe)
+		fmt.Printf("var fe = %#v\n", testFe)
+		return
+	}
+
 	if i := compareUint32Slices(ke[0:], testKe); i >= 0 {
 		t.Errorf("ke disagrees at index %v; %v != %v", i, ke[i], testKe[i])
 	}
