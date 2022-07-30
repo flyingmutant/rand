@@ -221,25 +221,25 @@ func TestNonStandardExponentialValues(t *testing.T) {
 func initNorm() (testKn []uint64, testWn, testFn []float64) {
 	const (
 		m1 = 1 << 31
-		vn = 0.00991256303526217
+		vn = 0.00492867323399
 	)
 	var (
 		dn = rn
 		tn = dn
 	)
 
-	testKn = make([]uint64, 128)
-	testWn = make([]float64, 128)
-	testFn = make([]float64, 128)
+	testKn = make([]uint64, 256)
+	testWn = make([]float64, 256)
+	testFn = make([]float64, 256)
 
 	q := vn / math.Exp(-0.5*dn*dn)
 	testKn[0] = uint64((dn / q) * m1)
 	testKn[1] = 0
 	testWn[0] = q / m1
-	testWn[127] = dn / m1
+	testWn[255] = dn / m1
 	testFn[0] = 1.0
-	testFn[127] = math.Exp(-0.5 * dn * dn)
-	for i := 126; i >= 1; i-- {
+	testFn[255] = math.Exp(-0.5 * dn * dn)
+	for i := 254; i >= 1; i-- {
 		dn = math.Sqrt(-2.0 * math.Log(vn/dn+math.Exp(-0.5*dn*dn)))
 		testKn[i+1] = uint64((dn / tn) * m1)
 		tn = dn

@@ -8,7 +8,7 @@ func Int31nForTest(r *Rand, n int32) int32 {
 	return r.Int31n(n)
 }
 
-func GetNormalDistributionParameters() (float64, [128]uint64, [128]float64, [128]float64) {
+func GetNormalDistributionParameters() (float64, [256]uint64, [256]float64, [256]float64) {
 	return rn, kn, wn, fn
 }
 
