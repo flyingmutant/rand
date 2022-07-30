@@ -218,7 +218,7 @@ func TestNonStandardExponentialValues(t *testing.T) {
 // Table generation tests
 //
 
-func initNorm() (testKn []uint32, testWn, testFn []float32) {
+func initNorm() (testKn []uint32, testWn, testFn []float64) {
 	const (
 		m1 = 1 << 31
 		vn = 0.00991256303526217
@@ -229,27 +229,27 @@ func initNorm() (testKn []uint32, testWn, testFn []float32) {
 	)
 
 	testKn = make([]uint32, 128)
-	testWn = make([]float32, 128)
-	testFn = make([]float32, 128)
+	testWn = make([]float64, 128)
+	testFn = make([]float64, 128)
 
 	q := vn / math.Exp(-0.5*dn*dn)
 	testKn[0] = uint32((dn / q) * m1)
 	testKn[1] = 0
-	testWn[0] = float32(q / m1)
-	testWn[127] = float32(dn / m1)
+	testWn[0] = q / m1
+	testWn[127] = dn / m1
 	testFn[0] = 1.0
-	testFn[127] = float32(math.Exp(-0.5 * dn * dn))
+	testFn[127] = math.Exp(-0.5 * dn * dn)
 	for i := 126; i >= 1; i-- {
 		dn = math.Sqrt(-2.0 * math.Log(vn/dn+math.Exp(-0.5*dn*dn)))
 		testKn[i+1] = uint32((dn / tn) * m1)
 		tn = dn
-		testFn[i] = float32(math.Exp(-0.5 * dn * dn))
-		testWn[i] = float32(dn / m1)
+		testFn[i] = math.Exp(-0.5 * dn * dn)
+		testWn[i] = dn / m1
 	}
 	return
 }
 
-func initExp() (testKe []uint32, testWe, testFe []float32) {
+func initExp() (testKe []uint32, testWe, testFe []float64) {
 	const (
 		m2 = 1 << 32
 		ve = 0.0039496598225815571993
@@ -260,22 +260,22 @@ func initExp() (testKe []uint32, testWe, testFe []float32) {
 	)
 
 	testKe = make([]uint32, 256)
-	testWe = make([]float32, 256)
-	testFe = make([]float32, 256)
+	testWe = make([]float64, 256)
+	testFe = make([]float64, 256)
 
 	q := ve / math.Exp(-de)
 	testKe[0] = uint32((de / q) * m2)
 	testKe[1] = 0
-	testWe[0] = float32(q / m2)
-	testWe[255] = float32(de / m2)
+	testWe[0] = q / m2
+	testWe[255] = de / m2
 	testFe[0] = 1.0
-	testFe[255] = float32(math.Exp(-de))
+	testFe[255] = math.Exp(-de)
 	for i := 254; i >= 1; i-- {
 		de = -math.Log(ve/de + math.Exp(-de))
 		testKe[i+1] = uint32((de / te) * m2)
 		te = de
-		testFe[i] = float32(math.Exp(-de))
-		testWe[i] = float32(de / m2)
+		testFe[i] = math.Exp(-de)
+		testWe[i] = de / m2
 	}
 	return
 }
@@ -298,10 +298,10 @@ func compareUint32Slices(s1, s2 []uint32) int {
 	return -1
 }
 
-// compareFloat32Slices returns the first index where the two slices
+// compareFloat64Slices returns the first index where the two slices
 // disagree, or <0 if the lengths are the same and all elements
 // are identical.
-func compareFloat32Slices(s1, s2 []float32) int {
+func compareFloat64Slices(s1, s2 []float64) int {
 	if len(s1) != len(s2) {
 		if len(s1) > len(s2) {
 			return len(s2) + 1
@@ -309,7 +309,7 @@ func compareFloat32Slices(s1, s2 []float32) int {
 		return len(s1) + 1
 	}
 	for i := range s1 {
-		if !nearEqual(float64(s1[i]), float64(s2[i]), 0, 1e-7) {
+		if !nearEqual(s1[i], s2[i], 0, 1e-7) {
 			return i
 		}
 	}
@@ -328,10 +328,10 @@ func TestNormTables(t *testing.T) {
 	if i := compareUint32Slices(kn[0:], testKn); i >= 0 {
 		t.Errorf("kn disagrees at index %v; %v != %v", i, kn[i], testKn[i])
 	}
-	if i := compareFloat32Slices(wn[0:], testWn); i >= 0 {
+	if i := compareFloat64Slices(wn[0:], testWn); i >= 0 {
 		t.Errorf("wn disagrees at index %v; %v != %v", i, wn[i], testWn[i])
 	}
-	if i := compareFloat32Slices(fn[0:], testFn); i >= 0 {
+	if i := compareFloat64Slices(fn[0:], testFn); i >= 0 {
 		t.Errorf("fn disagrees at index %v; %v != %v", i, fn[i], testFn[i])
 	}
 }
@@ -348,10 +348,10 @@ func TestExpTables(t *testing.T) {
 	if i := compareUint32Slices(ke[0:], testKe); i >= 0 {
 		t.Errorf("ke disagrees at index %v; %v != %v", i, ke[i], testKe[i])
 	}
-	if i := compareFloat32Slices(we[0:], testWe); i >= 0 {
+	if i := compareFloat64Slices(we[0:], testWe); i >= 0 {
 		t.Errorf("we disagrees at index %v; %v != %v", i, we[i], testWe[i])
 	}
-	if i := compareFloat32Slices(fe[0:], testFe); i >= 0 {
+	if i := compareFloat64Slices(fe[0:], testFe); i >= 0 {
 		t.Errorf("fe disagrees at index %v; %v != %v", i, fe[i], testFe[i])
 	}
 }

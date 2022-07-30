@@ -39,7 +39,7 @@ func (r *Rand) NormFloat64() float64 {
 	for {
 		j := int32(r.Uint32()) // Possibly negative
 		i := j & 0x7F
-		x := float64(j) * float64(wn[i])
+		x := float64(j) * wn[i]
 		if absInt32(j) < kn[i] {
 			// This case should be hit better than 99% of the time.
 			return x
@@ -59,7 +59,7 @@ func (r *Rand) NormFloat64() float64 {
 			}
 			return -rn - x
 		}
-		if fn[i]+float32(r.Float64())*(fn[i-1]-fn[i]) < float32(math.Exp(-.5*x*x)) {
+		if fn[i]+r.Float64()*(fn[i-1]-fn[i]) < math.Exp(-.5*x*x) {
 			return x
 		}
 	}
@@ -93,7 +93,7 @@ var kn = [128]uint32{
 	0x7da61a1e, 0x7d72a0fb, 0x7d30e097, 0x7cd9b4ab, 0x7c600f1a,
 	0x7ba90bdc, 0x7a722176, 0x77d664e5,
 }
-var wn = [128]float32{
+var wn = [128]float64{
 	1.7290405e-09, 1.2680929e-10, 1.6897518e-10, 1.9862688e-10,
 	2.2232431e-10, 2.4244937e-10, 2.601613e-10, 2.7611988e-10,
 	2.9073963e-10, 3.042997e-10, 3.1699796e-10, 3.289802e-10,
@@ -127,7 +127,7 @@ var wn = [128]float32{
 	1.2601323e-09, 1.2857697e-09, 1.3146202e-09, 1.347784e-09,
 	1.3870636e-09, 1.4357403e-09, 1.5008659e-09, 1.6030948e-09,
 }
-var fn = [128]float32{
+var fn = [128]float64{
 	1, 0.9635997, 0.9362827, 0.9130436, 0.89228165, 0.87324303,
 	0.8555006, 0.8387836, 0.8229072, 0.8077383, 0.793177,
 	0.7791461, 0.7655842, 0.7524416, 0.73967725, 0.7272569,
