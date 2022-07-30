@@ -220,7 +220,7 @@ func TestNonStandardExponentialValues(t *testing.T) {
 
 func initNorm() (testKn []uint64, testWn, testFn []float64) {
 	const (
-		m1 = 1 << 31
+		m1 = 1 << 52
 		vn = 0.00492867323399
 	)
 	var (
