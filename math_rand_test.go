@@ -309,7 +309,7 @@ func compareFloat64Slices(s1, s2 []float64) int {
 		return len(s1) + 1
 	}
 	for i := range s1 {
-		if !nearEqual(s1[i], s2[i], 0, 1e-7) {
+		if !nearEqual(s1[i], s2[i], 0, 1e-17) {
 			return i
 		}
 	}
