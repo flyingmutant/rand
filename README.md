@@ -22,7 +22,7 @@ Compared to [math/rand](https://pkg.go.dev/math/rand):
 ```
 name                    old time/op    new time/op    delta
 Rand_New-8                19.4µs ± 0%     0.1µs ± 4%   -99.54%  (p=0.000 n=8+9)
-Rand_ExpFloat64-8         12.8ns ± 1%     9.2ns ± 4%   -28.52%  (p=0.000 n=9+10)
+Rand_ExpFloat64-8         12.1ns ± 0%     8.6ns ± 0%   -28.92%  (p=0.000 n=10+8)
 Rand_Float32-8            10.3ns ± 2%     3.4ns ± 1%   -66.60%  (p=0.000 n=10+9)
 Rand_Float64-8            7.07ns ± 2%    4.08ns ± 0%   -42.24%  (p=0.000 n=10+9)
 Rand_Int-8                6.40ns ± 2%    3.82ns ± 0%   -40.20%  (p=0.000 n=10+9)
@@ -34,7 +34,7 @@ Rand_Int63n-8             42.5ns ± 2%     5.6ns ± 0%   -86.86%  (p=0.000 n=10+
 Rand_Int63n_Big-8         42.5ns ± 1%     9.5ns ± 0%   -77.69%  (p=0.000 n=10+10)
 Rand_Intn-8               19.4ns ± 2%     5.6ns ± 0%   -71.29%  (p=0.000 n=10+9)
 Rand_Intn_Big-8           45.2ns ± 1%     9.5ns ± 0%   -79.02%  (p=0.000 n=10+9)
-Rand_NormFloat64-8        14.1ns ± 1%    10.0ns ± 0%   -29.04%  (p=0.000 n=10+9)
+Rand_NormFloat64-8        13.3ns ± 0%     8.7ns ± 0%   -34.79%  (p=0.000 n=10+10)
 Rand_Perm-8               1.28µs ± 1%    0.39µs ± 0%   -69.35%  (p=0.000 n=9+10)
 Rand_Read-8                455ns ± 1%     134ns ± 0%   -70.52%  (p=0.000 n=10+10)
 Rand_Seed-8               17.5µs ± 1%     0.0µs ± 0%   -99.74%  (p=0.000 n=9+9)
@@ -63,7 +63,7 @@ Rand_Uint64-8            934MB/s ± 2%  2069MB/s ± 0%  +121.60%  (p=0.000 n=10+
 ```
 name                    old time/op    new time/op    delta
 Rand_New-8                95.2ns ± 1%    88.9ns ± 4%    -6.68%  (p=0.000 n=10+9)
-Rand_ExpFloat64-8         12.4ns ± 1%     9.2ns ± 4%   -25.85%  (p=0.000 n=10+10)
+Rand_ExpFloat64-8         12.3ns ± 0%     8.6ns ± 0%   -30.56%  (p=0.000 n=10+8)
 Rand_Float32-8            13.5ns ± 1%     3.4ns ± 1%   -74.38%  (p=0.000 n=9+9)
 Rand_Float64-8            11.1ns ± 5%     4.1ns ± 0%   -63.29%  (p=0.000 n=10+9)
 Rand_Int-8                7.37ns ± 5%    3.82ns ± 0%   -48.12%  (p=0.000 n=10+9)
@@ -75,7 +75,7 @@ Rand_Int63n-8             26.0ns ± 1%     5.6ns ± 0%   -78.55%  (p=0.000 n=9+8
 Rand_Int63n_Big-8         39.8ns ± 0%     9.5ns ± 0%   -76.15%  (p=0.000 n=8+10)
 Rand_Intn-8               26.0ns ± 1%     5.6ns ± 0%   -78.55%  (p=0.000 n=9+9)
 Rand_Intn_Big-8           39.9ns ± 1%     9.5ns ± 0%   -76.21%  (p=0.000 n=10+9)
-Rand_NormFloat64-8        14.0ns ± 0%    10.0ns ± 0%   -28.36%  (p=0.000 n=9+9)
+Rand_NormFloat64-8        14.0ns ± 0%     8.7ns ± 0%   -38.03%  (p=0.000 n=9+10)
 Rand_Perm-8               1.42µs ± 1%    0.39µs ± 0%   -72.23%  (p=0.000 n=9+10)
 Rand_Read-8                467ns ± 0%     134ns ± 0%   -71.29%  (p=0.000 n=9+10)
 Rand_Seed-8               6.28ns ± 6%   46.18ns ± 0%  +635.79%  (p=0.000 n=10+9)
