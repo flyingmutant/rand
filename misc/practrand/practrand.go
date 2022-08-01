@@ -27,7 +27,47 @@ const (
 	bufSizeBits    = numChunks * chunkSizeBits
 	bufSizeBytes   = bufSizeBits / 8
 	bufSizeWords   = bufSizeBytes / 8
+	maxInt52       = 1<<52 - 1
 )
+
+type randGen interface {
+	Uint64() uint64
+	Float64() float64
+	NormFloat64() float64
+	ExpFloat64() float64
+}
+
+type rand64 struct {
+	rng randGen
+}
+
+func (r *rand64) raw() uint64 {
+	return r.rng.Uint64()
+}
+
+func (r *rand64) fromF64() uint64 {
+	return floatToUniform(r.rng.Float64(), r.rng.Float64())
+}
+
+func (r *rand64) fromNorm() uint64 {
+	return floatToUniform(normalCDF(r.rng.NormFloat64()), normalCDF(r.rng.NormFloat64()))
+}
+
+func (r *rand64) fromExp() uint64 {
+	return floatToUniform(expCDF(r.rng.ExpFloat64()), expCDF(r.rng.ExpFloat64()))
+}
+
+func floatToUniform(x float64, y float64) uint64 {
+	return uint64(x*maxInt52)<<52 | uint64(y*maxInt52)
+}
+
+func normalCDF(x float64) float64 {
+	return 0.5 * math.Erfc(-x/math.Sqrt2)
+}
+
+func expCDF(x float64) float64 {
+	return -math.Expm1(-x)
+}
 
 func uint16nModulo(g func() uint64, n uint16) uint16 {
 	return uint16(g()) % n // biased
@@ -82,14 +122,37 @@ func setBit(buf []byte, i int, b bool) {
 }
 
 func run(gen string, shuffle string) error {
-	var g func() uint64
+	var (
+		randG = rand64{rand.New()}
+		stdG  = rand64{mathrand.New(mathrand.NewSource(int64(new(maphash.Hash).Sum64())))}
+		xG    = rand64{exprand.New(exprand.NewSource(new(maphash.Hash).Sum64()))}
+		g     func() uint64
+	)
 	switch gen {
-	case "sfc":
-		g = rand.New().Uint64
-	case "exp":
-		g = exprand.New(exprand.NewSource(new(maphash.Hash).Sum64())).Uint64
+	case "rand":
+		g = randG.raw
+	case "rand-f64":
+		g = randG.fromF64
+	case "rand-norm":
+		g = randG.fromNorm
+	case "rand-exp":
+		g = randG.fromExp
 	case "std":
-		g = mathrand.New(mathrand.NewSource(int64(new(maphash.Hash).Sum64()))).Uint64
+		g = stdG.raw
+	case "std-f64":
+		g = stdG.fromF64
+	case "std-norm":
+		g = stdG.fromNorm
+	case "std-exp":
+		g = stdG.fromExp
+	case "x":
+		g = xG.raw
+	case "x-f64":
+		g = xG.fromF64
+	case "x-norm":
+		g = xG.fromNorm
+	case "x-exp":
+		g = xG.fromExp
 	default:
 		return fmt.Errorf("unknown RNG: %q", gen)
 	}
@@ -140,7 +203,7 @@ func output(buf []byte, g func() uint64, b func(func() uint64, uint16) uint16) e
 
 func main() {
 	var (
-		gen     = flag.String("gen", "sfc", "RNG to use (sfc/exp/std)")
+		gen     = flag.String("gen", "sfc", "RNG to use (rand/rand-f64/rand-norm/rand-exp/std/std-f64/std-norm/std-exp/x/x-f64/x-norm/x-exp)")
 		shuffle = flag.String("shuffle", "none", "shuffle algorithm to use (none/mod/fp/lfp/lemire)")
 	)
 	flag.Parse()
