@@ -111,11 +111,12 @@ Rand_Uint64-8           1.19GB/s ± 0%  2.07GB/s ± 0%   +73.45%  (p=0.000 n=10+
 
 ### Why did you write this?
 
-`math/rand` is both slow and not up to standards
-([1](https://gist.github.com/flyingmutant/ad5841f5e594aa8687fe47de34985e6a),
-[2](https://github.com/flyingmutant/rand/issues/3))
+`math/rand` is both slow and [not up to standards](
+https://gist.github.com/flyingmutant/ad5841f5e594aa8687fe47de34985e6a)
 in terms of quality (but can not be changed because of Go 1 compatibility promise).
-`golang.org/x/exp/rand` fixes some (but not all) quality issues, without improving the speed,
+`golang.org/x/exp/rand` fixes some (but [not all](
+https://gist.github.com/flyingmutant/0b380f432308beaaf09c0a038f918aa4))
+quality issues, without improving the speed,
 and it seems that there is no active development happening there.
 
 ### How does this thing work?
