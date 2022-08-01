@@ -36,4 +36,4 @@ jobs:
         run: go test -tags=benchstd -run=Benchmark -bench=.
 
       - name: Bench golang.org/x/exp/rand
-        run: go test -tags=benchexp -run=Benchmark -bench=.
+        run: go test -tags=benchx -run=Benchmark -bench=.
