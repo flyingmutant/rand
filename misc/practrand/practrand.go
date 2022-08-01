@@ -121,40 +121,45 @@ func setBit(buf []byte, i int, b bool) {
 	}
 }
 
-func run(gen string, shuffle string) error {
-	var (
-		randG = rand64{rand.New()}
-		stdG  = rand64{mathrand.New(mathrand.NewSource(int64(new(maphash.Hash).Sum64())))}
-		xG    = rand64{exprand.New(exprand.NewSource(new(maphash.Hash).Sum64()))}
-		g     func() uint64
-	)
+func run(gen string, transform string, shuffle string) error {
+	var ctor func(uint64) randGen
 	switch gen {
 	case "rand":
-		g = randG.raw
-	case "rand-f64":
-		g = randG.fromF64
-	case "rand-norm":
-		g = randG.fromNorm
-	case "rand-exp":
-		g = randG.fromExp
+		ctor = func(s uint64) randGen { return rand.New(s) }
 	case "std":
-		g = stdG.raw
-	case "std-f64":
-		g = stdG.fromF64
-	case "std-norm":
-		g = stdG.fromNorm
-	case "std-exp":
-		g = stdG.fromExp
+		ctor = func(s uint64) randGen { return mathrand.New(mathrand.NewSource(int64(s))) }
 	case "x":
-		g = xG.raw
-	case "x-f64":
-		g = xG.fromF64
-	case "x-norm":
-		g = xG.fromNorm
-	case "x-exp":
-		g = xG.fromExp
+		ctor = func(s uint64) randGen { return exprand.New(exprand.NewSource(s)) }
 	default:
 		return fmt.Errorf("unknown RNG: %q", gen)
+	}
+
+	s := new(maphash.Hash).Sum64()
+	rng := func(s uint64) *rand64 { return &rand64{ctor(s)} }
+	var g func() uint64
+	switch transform {
+	case "none":
+		g = rng(s).raw
+	case "f64":
+		g = rng(s).fromF64
+	case "norm":
+		g = rng(s).fromNorm
+	case "exp":
+		g = rng(s).fromExp
+	case "8seed":
+		seeds := [8]uint64{1, 2, 4, 8, 16, 32, 64, 128}
+		gens := [8]*rand64{}
+		for i, s := range seeds {
+			gens[i] = rng(s)
+		}
+		i := 0
+		g = func() uint64 {
+			u := gens[i].raw()
+			i = (i + 1) % 8
+			return u
+		}
+	default:
+		return fmt.Errorf("unknown transform: %q", transform)
 	}
 
 	buf := make([]byte, 8*bufSizeWords)
@@ -203,12 +208,13 @@ func output(buf []byte, g func() uint64, b func(func() uint64, uint16) uint16) e
 
 func main() {
 	var (
-		gen     = flag.String("gen", "sfc", "RNG to use (rand/rand-f64/rand-norm/rand-exp/std/std-f64/std-norm/std-exp/x/x-f64/x-norm/x-exp)")
-		shuffle = flag.String("shuffle", "none", "shuffle algorithm to use (none/mod/fp/lfp/lemire)")
+		gen       = flag.String("gen", "rand", "RNG to use (rand/std/x)")
+		transform = flag.String("transform", "none", "transform to use (none/f64/norm/rand/8seed)")
+		shuffle   = flag.String("shuffle", "none", "shuffle algorithm to use (none/mod/fp/lfp/lemire)")
 	)
 	flag.Parse()
 
-	err := run(*gen, *shuffle)
+	err := run(*gen, *transform, *shuffle)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
