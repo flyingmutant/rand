@@ -37,6 +37,20 @@ type randGen interface {
 	ExpFloat64() float64
 }
 
+type wyrandSource struct {
+	seed uint64
+}
+
+func (s *wyrandSource) Seed(seed uint64) {
+	s.seed = seed // bad idea
+}
+
+func (s *wyrandSource) Uint64() uint64 {
+	s.seed += 0xa0761d6478bd642f
+	hi, lo := bits.Mul64(s.seed, s.seed^0xe7037ed1a0b428db)
+	return hi ^ lo
+}
+
 type rand64 struct {
 	rng randGen
 }
@@ -130,6 +144,8 @@ func run(gen string, transform string, shuffle string) error {
 		ctor = func(s uint64) randGen { return mathrand.New(mathrand.NewSource(int64(s))) }
 	case "x":
 		ctor = func(s uint64) randGen { return exprand.New(exprand.NewSource(s)) }
+	case "x-wy":
+		ctor = func(s uint64) randGen { return exprand.New(&wyrandSource{s}) }
 	default:
 		return fmt.Errorf("unknown RNG: %q", gen)
 	}
