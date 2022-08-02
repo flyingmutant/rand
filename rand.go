@@ -188,8 +188,7 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 		r.val >>= 8
 		r.pos--
 	}
-	b := (len(p) - n) & (^7)
-	for ; n < b; n += 8 {
+	for ; n+8 <= len(p); n += 8 {
 		binary.LittleEndian.PutUint64(p[n:n+8], r.next64())
 	}
 	if n < len(p) {
