@@ -29,8 +29,7 @@ const (
 // To produce a distribution with a different rate parameter,
 // callers can adjust the output using:
 //
-//  sample = ExpFloat64() / desiredRateParameter
-//
+//	sample = ExpFloat64() / desiredRateParameter
 func (r *Rand) ExpFloat64() float64 {
 	for {
 		v := r.Uint64()

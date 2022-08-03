@@ -8,9 +8,9 @@
 // security-sensitive work.
 //
 // This package is considerably faster and generates higher quality random
-// than the math/rand package. However, this package's outputs might be
+// than the [math/rand] package. However, this package's outputs might be
 // predictable regardless of how it's seeded. For random numbers
-// suitable for security-sensitive work, see the crypto/rand package.
+// suitable for security-sensitive work, see the [crypto/rand] package.
 package rand
 
 import (
@@ -30,11 +30,13 @@ const (
 	randSizeof = 8*4 + 8 + 1
 )
 
-// Rand is a pseudo-random number generator based on the SFC64 algorithm by Chris Doty-Humphrey.
+// Rand is a pseudo-random number generator based on the [SFC64] algorithm by Chris Doty-Humphrey.
 //
 // SFC64 has 256 bits of state, average period of ~2^255 and minimum period of at least 2^64.
-// Generators returned by New (with empty or distinct seeds) are guaranteed
+// Generators returned by [New] (with empty or distinct seeds) are guaranteed
 // to not run into each other for at least 2^64 iterations.
+//
+// [SFC64]: http://pracrand.sourceforge.net/RNG_engines.txt
 type Rand struct {
 	sfc64
 	val uint64
@@ -67,8 +69,8 @@ func (r *Rand) new_(seed ...uint64) {
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
 	r.init1(seed)
-	r.pos = 0
 	r.val = 0
+	r.pos = 0
 }
 
 // MarshalBinary returns the binary representation of the current state of the generator.
@@ -101,27 +103,28 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 	return nil
 }
 
-// Float32 returns, as a float32, a pseudo-random number in the half-open interval [0.0, 1.0).
+// Float32 returns, as a float32, a uniformly distributed pseudo-random number in the half-open interval [0.0, 1.0).
 func (r *Rand) Float32() float32 {
 	return float32(r.next32()&int24Mask) * 0x1.0p-24
 }
 
-// Float64 returns, as a float64, a pseudo-random number in the half-open interval [0.0, 1.0).
+// Float64 returns, as a float64, a uniformly distributed pseudo-random number in the half-open interval [0.0, 1.0).
 func (r *Rand) Float64() float64 {
 	return float64(r.next64()&int53Mask) * 0x1.0p-53
 }
 
-// Int returns a non-negative pseudo-random int.
+// Int returns a uniformly distributed non-negative pseudo-random int.
 func (r *Rand) Int() int {
 	return int(r.next64() & intMask)
 }
 
-// Int31 returns a non-negative pseudo-random 31-bit integer as an int32.
+// Int31 returns a uniformly distributed non-negative pseudo-random 31-bit integer as an int32.
 func (r *Rand) Int31() int32 {
 	return int32(r.next32() & int31Mask)
 }
 
-// Int31n returns, as an int32, a non-negative pseudo-random number in the half-open interval [0, n). It panics if n <= 0.
+// Int31n returns, as an int32, a uniformly distributed non-negative pseudo-random number
+// in the half-open interval [0, n). It panics if n <= 0.
 func (r *Rand) Int31n(n int32) int32 {
 	if n <= 0 {
 		panic("invalid argument to Int31n")
@@ -129,12 +132,13 @@ func (r *Rand) Int31n(n int32) int32 {
 	return int32(r.Uint32n(uint32(n)))
 }
 
-// Int63 returns a non-negative pseudo-random 63-bit integer as an int64.
+// Int63 returns a uniformly distributed non-negative pseudo-random 63-bit integer as an int64.
 func (r *Rand) Int63() int64 {
 	return int64(r.next64() & int63Mask)
 }
 
-// Int63n returns, as an int64, a non-negative pseudo-random number in the half-open interval [0, n). It panics if n <= 0.
+// Int63n returns, as an int64, a uniformly distributed non-negative pseudo-random number
+// in the half-open interval [0, n). It panics if n <= 0.
 func (r *Rand) Int63n(n int64) int64 {
 	if n <= 0 {
 		panic("invalid argument to Int63n")
@@ -142,7 +146,8 @@ func (r *Rand) Int63n(n int64) int64 {
 	return int64(r.Uint64n(uint64(n)))
 }
 
-// Intn returns, as an int, a non-negative pseudo-random number in the half-open interval [0, n). It panics if n <= 0.
+// Intn returns, as an int, a uniformly distributed non-negative pseudo-random number
+// in the half-open interval [0, n). It panics if n <= 0.
 func (r *Rand) Intn(n int) int {
 	if n <= 0 {
 		panic("invalid argument to Intn")
@@ -180,7 +185,7 @@ func (r *Rand) perm(p []int) {
 	}
 }
 
-// Read generates len(p) random bytes and writes them into p. It always returns len(p) and a nil error.
+// Read generates len(p) pseudo-random bytes and writes them into p. It always returns len(p) and a nil error.
 func (r *Rand) Read(p []byte) (n int, err error) {
 	pos := r.pos
 	for ; n < len(p) && n < pos; n++ {
@@ -205,7 +210,7 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 // Shuffle pseudo-randomizes the order of elements. n is the number of elements. Shuffle panics if n < 0.
 // swap swaps the elements with indexes i and j.
 //
-// For shuffling elements of a slice, prefer the top-level Shuffle function.
+// For shuffling elements of a slice, prefer the top-level [Shuffle] function.
 func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	if n < 0 {
 		panic("invalid argument to Shuffle")
@@ -221,7 +226,7 @@ func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	}
 }
 
-// Uint32 returns a pseudo-random 32-bit value as an uint32.
+// Uint32 returns a uniformly distributed pseudo-random 32-bit value as an uint32.
 func (r *Rand) Uint32() uint32 {
 	return uint32(r.next32())
 }
@@ -238,7 +243,7 @@ func (r *Rand) next32() uint64 {
 	}
 }
 
-// Uint32n returns, as an uint32, a pseudo-random number in [0, n). Uint32n(0) returns 0.
+// Uint32n returns, as an uint32, a uniformly distributed pseudo-random number in [0, n). Uint32n(0) returns 0.
 func (r *Rand) Uint32n(n uint32) uint32 {
 	// much faster 32-bit version of Uint64n(); result is unbiased with probability 1 - 2^-32.
 	// detecting possible bias would require at least 2^64 samples, which we consider acceptable
@@ -250,12 +255,12 @@ func (r *Rand) Uint32n(n uint32) uint32 {
 	return uint32(res)
 }
 
-// Uint64 returns a pseudo-random 64-bit value as a uint64.
+// Uint64 returns a uniformly distributed pseudo-random 64-bit value as a uint64.
 func (r *Rand) Uint64() uint64 {
 	return r.next64()
 }
 
-// Uint64n returns, as an uint64, a pseudo-random number in [0, n). Uint64n(0) returns 0.
+// Uint64n returns, as an uint64, a uniformly distributed pseudo-random number in [0, n). Uint64n(0) returns 0.
 func (r *Rand) Uint64n(n uint64) uint64 {
 	// "An optimal algorithm for bounded random integers" by Stephen Canon, https://github.com/apple/swift/pull/39143
 	res, frac := bits.Mul64(n, r.next64())

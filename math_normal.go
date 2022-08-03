@@ -36,8 +36,7 @@ func absInt64(i int64) uint64 {
 // To produce a different normal distribution, callers can
 // adjust the output using:
 //
-//  sample = NormFloat64() * desiredStdDev + desiredMean
-//
+//	sample = NormFloat64() * desiredStdDev + desiredMean
 func (r *Rand) NormFloat64() float64 {
 	for {
 		v := r.Uint64()
