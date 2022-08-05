@@ -48,7 +48,7 @@ func TestRegress(t *testing.T) {
 		m := rv.Type().Method(i)
 		mv := rv.Method(i)
 		mt := mv.Type()
-		if m.Name == "Seed" || m.Name == "UnmarshalBinary" {
+		if m.Name == "Get" || m.Name == "Seed" || m.Name == "UnmarshalBinary" {
 			continue
 		}
 		for repeat := 0; repeat < 17; repeat++ {

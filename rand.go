@@ -30,6 +30,10 @@ const (
 	randSizeof = 8*4 + 8 + 1
 )
 
+var (
+	zero Rand
+)
+
 // Rand is a pseudo-random number generator based on the [SFC64] algorithm by Chris Doty-Humphrey.
 //
 // SFC64 has 256 bits of state, average period of ~2^255 and minimum period of at least 2^64.
@@ -64,6 +68,23 @@ func (r *Rand) new_(seed ...uint64) {
 	default:
 		panic("invalid New seed sequence length")
 	}
+}
+
+// Get returns r, initializing it as if it was constructed by [New] if it was previously uninitialized.
+// This allows to conveniently use Rand values non-deterministically without explicit initialization:
+//
+//	type Dice struct {
+//	    rng rand.Rand
+//	}
+//
+//	func (d *Dice) Roll() int {
+//	    return d.rng.Get().Intn(6)
+//	}
+func (r *Rand) Get() *Rand {
+	if r.w == 0 && *r == zero {
+		r.init0()
+	}
+	return r
 }
 
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
