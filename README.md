@@ -140,7 +140,8 @@ How often do you use a non-default `Source` with `math/rand`?
 
 Dislike for global mutable state. Also, without some kind of thread-local state they are
 very slow (because global state needs to be mutex-protected). If you like the
-convenience of top-level functions, `math/rand` is a fine choice.
+convenience of top-level functions, `math/rand` is a fine choice. And if you just need
+a couple of random integers and don't care about the performance, `rand.New().Int()` works too.
 
 ### Why `sfc64`?
 

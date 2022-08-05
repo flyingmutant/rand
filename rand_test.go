@@ -48,6 +48,15 @@ func BenchmarkRand_New3(b *testing.B) {
 	sinkRand = s
 }
 
+func BenchmarkRand_NewInt(b *testing.B) {
+	var s int
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		s = rand.New().Int()
+	}
+	sinkInt = s
+}
+
 func BenchmarkRand_Get(b *testing.B) {
 	var r rand.Rand
 	var s *rand.Rand
