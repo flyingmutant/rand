@@ -4,6 +4,10 @@
 
 package rand
 
+func Rand64() uint64 {
+	return rand64()
+}
+
 func Int31nForTest(r *Rand, n int32) int32 {
 	return r.Int31n(n)
 }

@@ -9,7 +9,7 @@ Compared to these packages, `pgregory.net/rand`:
 - has simpler generator initialization:
   - `rand.New()` instead of `rand.New(rand.NewSource(time.Now().UnixNano()))`
   - `rand.New(1)` instead of `rand.New(rand.NewSource(1))`
-- is deliberately not providing top-level functions like `Float64()` or `Int()`
+- is deliberately not providing most top-level functions like `ExpFloat64()` or `Int()`
   and the `Source` interface.
 
 ## Benchmarks
@@ -142,6 +142,10 @@ Dislike for global mutable state. Also, without some kind of thread-local state 
 very slow (because global state needs to be mutex-protected). If you like the
 convenience of top-level functions, `math/rand` is a fine choice. And if you just need
 a couple of random integers and don't care about the performance, `rand.New().Int()` works too.
+As an exception, [`rand.Intn()`](https://pkg.go.dev/pgregory.net/rand#Intn) and
+[`rand.Float64()`](https://pkg.go.dev/pgregory.net/rand#Float64) are provided to ease
+porting of applications relying on a global random number generator that is safe for
+concurrent use.
 
 ### Why `sfc64`?
 

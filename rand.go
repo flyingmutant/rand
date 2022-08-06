@@ -27,6 +27,9 @@ const (
 	int63Mask = 1<<63 - 1
 	intMask   = math.MaxInt
 
+	f24Mul = 0x1.0p-24
+	f53Mul = 0x1.0p-53
+
 	randSizeof = 8*4 + 8 + 1
 )
 
@@ -126,12 +129,12 @@ func (r *Rand) UnmarshalBinary(data []byte) error {
 
 // Float32 returns, as a float32, a uniformly distributed pseudo-random number in the half-open interval [0.0, 1.0).
 func (r *Rand) Float32() float32 {
-	return float32(r.next32()&int24Mask) * 0x1.0p-24
+	return float32(r.next32()&int24Mask) * f24Mul
 }
 
 // Float64 returns, as a float64, a uniformly distributed pseudo-random number in the half-open interval [0.0, 1.0).
 func (r *Rand) Float64() float64 {
-	return float64(r.next64()&int53Mask) * 0x1.0p-53
+	return float64(r.next64()&int53Mask) * f53Mul
 }
 
 // Int returns a uniformly distributed non-negative pseudo-random int.
