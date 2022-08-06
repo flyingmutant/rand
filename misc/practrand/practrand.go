@@ -52,6 +52,16 @@ func (s *wyrandSource) Uint64() uint64 {
 	return hi ^ lo
 }
 
+type globalSource struct{}
+
+func (s globalSource) Seed(_ uint64) {}
+
+func (s globalSource) Uint64() uint64 {
+	a := rand.Intn(math.MaxUint32)
+	b := rand.Intn(math.MaxUint32)
+	return uint64(a)<<32 | uint64(b)
+}
+
 type fastSource struct {
 	rng fastrand.RNG
 }
@@ -161,6 +171,8 @@ func run(gen string, transform string, shuffle string) error {
 		ctor = func(s uint64) randGen { return exprand.New(exprand.NewSource(s)) }
 	case "x-wy":
 		ctor = func(s uint64) randGen { return exprand.New(&wyrandSource{s}) }
+	case "x-rand-g":
+		ctor = func(_ uint64) randGen { return exprand.New(globalSource{}) }
 	case "x-fast":
 		ctor = func(s uint64) randGen {
 			var rng fastrand.RNG
