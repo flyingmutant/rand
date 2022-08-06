@@ -10,6 +10,7 @@ import (
 	"encoding/binary"
 	"flag"
 	"fmt"
+	"github.com/valyala/fastrand"
 	exprand "golang.org/x/exp/rand"
 	"hash/maphash"
 	"log"
@@ -49,6 +50,20 @@ func (s *wyrandSource) Uint64() uint64 {
 	s.seed += 0xa0761d6478bd642f
 	hi, lo := bits.Mul64(s.seed, s.seed^0xe7037ed1a0b428db)
 	return hi ^ lo
+}
+
+type fastSource struct {
+	rng fastrand.RNG
+}
+
+func (s *fastSource) Seed(seed uint64) {
+	s.rng.Seed(uint32(seed))
+}
+
+func (s *fastSource) Uint64() uint64 {
+	a := s.rng.Uint32()
+	b := s.rng.Uint32()
+	return uint64(a)<<32 | uint64(b)
 }
 
 type rand64 struct {
@@ -146,6 +161,12 @@ func run(gen string, transform string, shuffle string) error {
 		ctor = func(s uint64) randGen { return exprand.New(exprand.NewSource(s)) }
 	case "x-wy":
 		ctor = func(s uint64) randGen { return exprand.New(&wyrandSource{s}) }
+	case "x-fast":
+		ctor = func(s uint64) randGen {
+			var rng fastrand.RNG
+			rng.Seed(uint32(s))
+			return exprand.New(&fastSource{rng})
+		}
 	default:
 		return fmt.Errorf("unknown RNG: %q", gen)
 	}
@@ -224,7 +245,7 @@ func output(buf []byte, g func() uint64, b func(func() uint64, uint16) uint16) e
 
 func main() {
 	var (
-		gen       = flag.String("gen", "rand", "RNG to use (rand/std/x)")
+		gen       = flag.String("gen", "rand", "RNG to use (rand/std/x/x-wy/x-fast)")
 		transform = flag.String("transform", "none", "transform to use (none/f64/norm/rand/8seed)")
 		shuffle   = flag.String("shuffle", "none", "shuffle algorithm to use (none/mod/fp/lfp/lemire)")
 	)

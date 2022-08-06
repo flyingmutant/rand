@@ -113,6 +113,18 @@ Rand_Uint64-48           1.56GB/s ± 5%  2.81GB/s ± 4%   +80.32%  (p=0.000 n=10
 ```
 </details>
 
+<details>
+<summary>Compared to <a href="https://pkg.go.dev/github.com/valyala/fastrand">github.com/valyala/fastrand</a>:</summary>
+
+Note that `fastrand` [does not](https://gist.github.com/flyingmutant/bf3bd489ee3c7a32f40714c11325d614)
+generate good random numbers.
+
+```
+name     old time/op  new time/op  delta
+Intn-48  1.83ns ±21%  0.69ns ±11%  -62.35%  (p=0.000 n=10+10)
+```
+</details>
+
 ## FAQ
 
 ### Why did you write this?
