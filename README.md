@@ -14,96 +14,102 @@ Compared to these packages, `pgregory.net/rand`:
 
 ## Benchmarks
 
-All benchmarks were run on `Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz` (frequency-locked),
+All benchmarks were run on `Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz`,
 `linux/amd64`.
 
 Compared to [math/rand](https://pkg.go.dev/math/rand):
 
 ```
-name                    old time/op    new time/op    delta
-Rand_New-8                19.4µs ± 0%     0.1µs ± 4%   -99.54%  (p=0.000 n=8+9)
-Rand_ExpFloat64-8         12.1ns ± 0%     8.6ns ± 0%   -28.92%  (p=0.000 n=10+8)
-Rand_Float32-8            10.3ns ± 2%     3.4ns ± 1%   -66.60%  (p=0.000 n=10+9)
-Rand_Float64-8            7.07ns ± 2%    4.08ns ± 0%   -42.24%  (p=0.000 n=10+9)
-Rand_Int-8                6.40ns ± 2%    3.82ns ± 0%   -40.20%  (p=0.000 n=10+9)
-Rand_Int31-8              6.27ns ± 2%    2.64ns ± 0%   -57.90%  (p=0.000 n=10+8)
-Rand_Int31n-8             16.9ns ± 2%     4.0ns ± 0%   -76.14%  (p=0.000 n=10+8)
-Rand_Int31n_Big-8         16.9ns ± 1%     4.0ns ± 0%   -76.07%  (p=0.000 n=10+9)
-Rand_Int63-8              6.19ns ± 2%    3.82ns ± 0%   -38.31%  (p=0.000 n=10+9)
-Rand_Int63n-8             42.5ns ± 2%     5.6ns ± 0%   -86.86%  (p=0.000 n=10+8)
-Rand_Int63n_Big-8         42.5ns ± 1%     9.5ns ± 0%   -77.69%  (p=0.000 n=10+10)
-Rand_Intn-8               19.4ns ± 2%     5.6ns ± 0%   -71.29%  (p=0.000 n=10+9)
-Rand_Intn_Big-8           45.2ns ± 1%     9.5ns ± 0%   -79.02%  (p=0.000 n=10+9)
-Rand_NormFloat64-8        13.3ns ± 0%     8.7ns ± 0%   -34.79%  (p=0.000 n=10+10)
-Rand_Perm-8               1.28µs ± 1%    0.39µs ± 0%   -69.35%  (p=0.000 n=9+10)
-Rand_Read-8                455ns ± 1%     134ns ± 0%   -70.52%  (p=0.000 n=10+10)
-Rand_Seed-8               17.5µs ± 1%     0.0µs ± 0%   -99.74%  (p=0.000 n=9+9)
-Rand_Shuffle-8             696ns ± 2%     409ns ± 0%   -41.32%  (p=0.000 n=10+9)
-Rand_ShuffleOverhead-8     576ns ± 2%     303ns ± 0%   -47.30%  (p=0.000 n=10+9)
-Rand_Uint32-8             6.15ns ± 2%    2.61ns ± 1%   -57.56%  (p=0.000 n=10+9)
-Rand_Uint64-8             8.57ns ± 2%    3.87ns ± 0%   -54.88%  (p=0.000 n=10+9)
+name                     old time/op    new time/op    delta
+Float64-48                  180ns ± 8%       1ns ±12%   -99.66%  (p=0.000 n=10+9)
+Intn-48                     186ns ± 2%       1ns ±11%   -99.63%  (p=0.000 n=10+10)
+Intn_Big-48                 200ns ± 1%       1ns ±19%   -99.28%  (p=0.000 n=8+10)
+Rand_New-48                12.7µs ± 4%     0.1µs ± 6%   -99.38%  (p=0.000 n=10+10)
+Rand_ExpFloat64-48         9.66ns ± 3%    5.90ns ± 3%   -38.97%  (p=0.000 n=10+10)
+Rand_Float32-48            8.90ns ± 5%    2.04ns ± 4%   -77.05%  (p=0.000 n=10+10)
+Rand_Float64-48            7.62ns ± 4%    2.93ns ± 3%   -61.50%  (p=0.000 n=10+10)
+Rand_Int-48                7.74ns ± 3%    2.92ns ± 2%   -62.30%  (p=0.000 n=10+10)
+Rand_Int31-48              7.81ns ± 3%    1.92ns ±14%   -75.39%  (p=0.000 n=10+10)
+Rand_Int31n-48             12.7ns ± 3%     3.0ns ± 3%   -76.66%  (p=0.000 n=9+10)
+Rand_Int31n_Big-48         12.6ns ± 4%     3.4ns ±10%   -73.39%  (p=0.000 n=10+10)
+Rand_Int63-48              7.78ns ± 4%    2.96ns ± 6%   -61.97%  (p=0.000 n=10+9)
+Rand_Int63n-48             26.4ns ± 1%     3.6ns ± 3%   -86.56%  (p=0.000 n=10+10)
+Rand_Int63n_Big-48         26.2ns ± 7%     6.2ns ± 4%   -76.53%  (p=0.000 n=10+10)
+Rand_Intn-48               14.4ns ± 5%     3.5ns ± 3%   -75.72%  (p=0.000 n=10+10)
+Rand_Intn_Big-48           28.8ns ± 2%     6.0ns ± 6%   -79.03%  (p=0.000 n=10+10)
+Rand_NormFloat64-48        10.7ns ± 6%     6.0ns ± 3%   -44.28%  (p=0.000 n=10+10)
+Rand_Perm-48               1.34µs ± 1%    0.39µs ± 3%   -70.86%  (p=0.000 n=9+10)
+Rand_Read-48                289ns ± 5%     104ns ± 5%   -64.00%  (p=0.000 n=10+10)
+Rand_Seed-48               10.9µs ± 4%     0.0µs ± 6%   -99.69%  (p=0.000 n=10+10)
+Rand_Shuffle-48             790ns ± 4%     374ns ± 5%   -52.63%  (p=0.000 n=10+10)
+Rand_ShuffleOverhead-48     522ns ± 3%     204ns ± 4%   -60.83%  (p=0.000 n=10+10)
+Rand_Uint32-48             7.82ns ± 3%    1.72ns ± 3%   -77.98%  (p=0.000 n=10+9)
+Rand_Uint64-48             9.59ns ± 3%    2.83ns ± 2%   -70.47%  (p=0.000 n=10+9)
 
-name                    old alloc/op   new alloc/op   delta
-Rand_New-8                5.42kB ± 0%    0.05kB ± 0%   -99.12%  (p=0.000 n=10+10)
-Rand_Perm-8                 416B ± 0%      416B ± 0%      ~     (all equal)
+name                     old alloc/op   new alloc/op   delta
+Rand_New-48                5.42kB ± 0%    0.05kB ± 0%   -99.12%  (p=0.000 n=10+10)
+Rand_Perm-48                 416B ± 0%      416B ± 0%      ~     (all equal)
 
-name                    old allocs/op  new allocs/op  delta
-Rand_New-8                  2.00 ± 0%      1.00 ± 0%   -50.00%  (p=0.000 n=10+10)
-Rand_Perm-8                 1.00 ± 0%      1.00 ± 0%      ~     (all equal)
+name                     old allocs/op  new allocs/op  delta
+Rand_New-48                  2.00 ± 0%      1.00 ± 0%   -50.00%  (p=0.000 n=10+10)
+Rand_Perm-48                 1.00 ± 0%      1.00 ± 0%      ~     (all equal)
 
-name                    old speed      new speed      delta
-Rand_Read-8              563MB/s ± 1%  1908MB/s ± 0%  +239.15%  (p=0.000 n=10+10)
-Rand_Uint32-8            650MB/s ± 2%  1531MB/s ± 1%  +135.57%  (p=0.000 n=10+9)
-Rand_Uint64-8            934MB/s ± 2%  2069MB/s ± 0%  +121.60%  (p=0.000 n=10+9)
+name                     old speed      new speed      delta
+Rand_Read-48              887MB/s ± 4%  2464MB/s ± 4%  +177.83%  (p=0.000 n=10+10)
+Rand_Uint32-48            511MB/s ± 3%  2306MB/s ± 7%  +350.86%  (p=0.000 n=10+10)
+Rand_Uint64-48            834MB/s ± 3%  2811MB/s ± 4%  +236.85%  (p=0.000 n=10+10)
 ```
 
 <details>
 <summary>Compared to <a href="https://pkg.go.dev/golang.org/x/exp/rand">golang.org/x/exp/rand</a>:</summary>
 
 ```
-name                    old time/op    new time/op    delta
-Rand_New-8                95.2ns ± 1%    88.9ns ± 4%    -6.68%  (p=0.000 n=10+9)
-Rand_ExpFloat64-8         12.3ns ± 0%     8.6ns ± 0%   -30.56%  (p=0.000 n=10+8)
-Rand_Float32-8            13.5ns ± 1%     3.4ns ± 1%   -74.38%  (p=0.000 n=9+9)
-Rand_Float64-8            11.1ns ± 5%     4.1ns ± 0%   -63.29%  (p=0.000 n=10+9)
-Rand_Int-8                7.37ns ± 5%    3.82ns ± 0%   -48.12%  (p=0.000 n=10+9)
-Rand_Int31-8              7.10ns ± 4%    2.64ns ± 0%   -62.82%  (p=0.000 n=10+8)
-Rand_Int31n-8             26.1ns ± 0%     4.0ns ± 0%   -84.49%  (p=0.000 n=10+8)
-Rand_Int31n_Big-8         26.0ns ± 1%     4.0ns ± 0%   -84.50%  (p=0.000 n=9+9)
-Rand_Int63-8              6.92ns ± 1%    3.82ns ± 0%   -44.82%  (p=0.000 n=9+9)
-Rand_Int63n-8             26.0ns ± 1%     5.6ns ± 0%   -78.55%  (p=0.000 n=9+8)
-Rand_Int63n_Big-8         39.8ns ± 0%     9.5ns ± 0%   -76.15%  (p=0.000 n=8+10)
-Rand_Intn-8               26.0ns ± 1%     5.6ns ± 0%   -78.55%  (p=0.000 n=9+9)
-Rand_Intn_Big-8           39.9ns ± 1%     9.5ns ± 0%   -76.21%  (p=0.000 n=10+9)
-Rand_NormFloat64-8        14.0ns ± 0%     8.7ns ± 0%   -38.03%  (p=0.000 n=9+10)
-Rand_Perm-8               1.42µs ± 1%    0.39µs ± 0%   -72.23%  (p=0.000 n=9+10)
-Rand_Read-8                467ns ± 0%     134ns ± 0%   -71.29%  (p=0.000 n=9+10)
-Rand_Seed-8               6.28ns ± 6%   46.18ns ± 0%  +635.79%  (p=0.000 n=10+9)
-Rand_Shuffle-8            1.40µs ± 1%    0.41µs ± 0%   -70.75%  (p=0.000 n=9+9)
-Rand_ShuffleOverhead-8    1.28µs ± 0%    0.30µs ± 0%   -76.26%  (p=0.000 n=10+9)
-Rand_Uint32-8             6.70ns ± 0%    2.61ns ± 1%   -61.02%  (p=0.000 n=10+9)
-Rand_Uint64-8             6.71ns ± 0%    3.87ns ± 0%   -42.35%  (p=0.000 n=10+9)
-Rand_Uint64n-8            25.0ns ± 1%     5.6ns ± 0%   -77.59%  (p=0.000 n=10+10)
-Rand_Uint64n_Big-8        40.0ns ± 1%     9.2ns ± 1%   -76.99%  (p=0.000 n=9+10)
-Rand_MarshalBinary-8      36.7ns ± 2%     6.1ns ± 0%   -83.27%  (p=0.000 n=10+10)
-Rand_UnmarshalBinary-8    5.31ns ± 0%    6.14ns ± 0%   +15.63%  (p=0.000 n=9+10)
+name                     old time/op    new time/op    delta
+Float64-48                  175ns ± 8%       1ns ±12%   -99.65%  (p=0.000 n=10+9)
+Intn-48                     176ns ±10%       1ns ±11%   -99.61%  (p=0.000 n=10+10)
+Intn_Big-48                 174ns ± 1%       1ns ±19%   -99.18%  (p=0.000 n=9+10)
+Rand_New-48                78.8ns ± 6%    78.3ns ± 6%      ~     (p=0.853 n=10+10)
+Rand_ExpFloat64-48         8.94ns ± 6%    5.90ns ± 3%   -34.00%  (p=0.000 n=10+10)
+Rand_Float32-48            9.67ns ± 5%    2.04ns ± 4%   -78.89%  (p=0.000 n=10+10)
+Rand_Float64-48            8.56ns ± 5%    2.93ns ± 3%   -65.74%  (p=0.000 n=10+10)
+Rand_Int-48                5.75ns ± 3%    2.92ns ± 2%   -49.25%  (p=0.000 n=9+10)
+Rand_Int31-48              5.72ns ± 5%    1.92ns ±14%   -66.37%  (p=0.000 n=10+10)
+Rand_Int31n-48             17.4ns ± 7%     3.0ns ± 3%   -82.87%  (p=0.000 n=10+10)
+Rand_Int31n_Big-48         17.3ns ± 4%     3.4ns ±10%   -80.57%  (p=0.000 n=10+10)
+Rand_Int63-48              5.77ns ± 4%    2.96ns ± 6%   -48.73%  (p=0.000 n=10+9)
+Rand_Int63n-48             17.0ns ± 2%     3.6ns ± 3%   -79.13%  (p=0.000 n=9+10)
+Rand_Int63n_Big-48         26.5ns ± 2%     6.2ns ± 4%   -76.81%  (p=0.000 n=10+10)
+Rand_Intn-48               17.5ns ± 5%     3.5ns ± 3%   -79.94%  (p=0.000 n=10+10)
+Rand_Intn_Big-48           27.5ns ± 3%     6.0ns ± 6%   -78.09%  (p=0.000 n=10+10)
+Rand_NormFloat64-48        10.0ns ± 3%     6.0ns ± 3%   -40.45%  (p=0.000 n=10+10)
+Rand_Perm-48               1.31µs ± 1%    0.39µs ± 3%   -70.04%  (p=0.000 n=10+10)
+Rand_Read-48                334ns ± 1%     104ns ± 5%   -68.88%  (p=0.000 n=8+10)
+Rand_Seed-48               5.36ns ± 2%   33.73ns ± 6%  +528.91%  (p=0.000 n=10+10)
+Rand_Shuffle-48            1.22µs ± 2%    0.37µs ± 5%   -69.36%  (p=0.000 n=10+10)
+Rand_ShuffleOverhead-48     907ns ± 2%     204ns ± 4%   -77.45%  (p=0.000 n=10+10)
+Rand_Uint32-48             5.20ns ± 5%    1.72ns ± 3%   -66.84%  (p=0.000 n=10+9)
+Rand_Uint64-48             5.14ns ± 5%    2.83ns ± 2%   -44.85%  (p=0.000 n=10+9)
+Rand_Uint64n-48            17.6ns ± 3%     3.5ns ± 2%   -80.32%  (p=0.000 n=10+10)
+Rand_Uint64n_Big-48        27.3ns ± 2%     6.0ns ± 7%   -77.97%  (p=0.000 n=10+10)
+Rand_MarshalBinary-48      30.5ns ± 1%     3.8ns ± 4%   -87.70%  (p=0.000 n=8+10)
+Rand_UnmarshalBinary-48    3.22ns ± 4%    3.71ns ± 3%   +15.16%  (p=0.000 n=10+10)
 
-name                    old alloc/op   new alloc/op   delta
-Rand_New-8                 48.0B ± 0%     48.0B ± 0%      ~     (all equal)
-Rand_Perm-8                 416B ± 0%      416B ± 0%      ~     (all equal)
-Rand_MarshalBinary-8       16.0B ± 0%      0.0B       -100.00%  (p=0.000 n=10+10)
-Rand_UnmarshalBinary-8     0.00B          0.00B           ~     (all equal)
+name                     old alloc/op   new alloc/op   delta
+Rand_New-48                 48.0B ± 0%     48.0B ± 0%      ~     (all equal)
+Rand_Perm-48                 416B ± 0%      416B ± 0%      ~     (all equal)
+Rand_MarshalBinary-48       16.0B ± 0%      0.0B       -100.00%  (p=0.000 n=10+10)
+Rand_UnmarshalBinary-48     0.00B          0.00B           ~     (all equal)
 
-name                    old allocs/op  new allocs/op  delta
-Rand_New-8                  2.00 ± 0%      1.00 ± 0%   -50.00%  (p=0.000 n=10+10)
-Rand_Perm-8                 1.00 ± 0%      1.00 ± 0%      ~     (all equal)
-Rand_MarshalBinary-8        1.00 ± 0%      0.00       -100.00%  (p=0.000 n=10+10)
-Rand_UnmarshalBinary-8      0.00           0.00           ~     (all equal)
+name                     old allocs/op  new allocs/op  delta
+Rand_New-48                  2.00 ± 0%      1.00 ± 0%   -50.00%  (p=0.000 n=10+10)
+Rand_Perm-48                 1.00 ± 0%      1.00 ± 0%      ~     (all equal)
+Rand_MarshalBinary-48        1.00 ± 0%      0.00       -100.00%  (p=0.000 n=10+10)
+Rand_UnmarshalBinary-48      0.00           0.00           ~     (all equal)
 
-name                    old speed      new speed      delta
-Rand_Read-8              548MB/s ± 0%  1908MB/s ± 0%  +248.24%  (p=0.000 n=9+10)
-Rand_Uint32-8            597MB/s ± 0%  1531MB/s ± 1%  +156.55%  (p=0.000 n=10+9)
-Rand_Uint64-8           1.19GB/s ± 0%  2.07GB/s ± 0%   +73.45%  (p=0.000 n=10+9)
+name                     old speed      new speed      delta
+Rand_Read-48              764MB/s ± 3%  2464MB/s ± 4%  +222.68%  (p=0.000 n=9+10)
+Rand_Uint32-48            770MB/s ± 5%  2306MB/s ± 7%  +199.35%  (p=0.000 n=10+10)
+Rand_Uint64-48           1.56GB/s ± 5%  2.81GB/s ± 4%   +80.32%  (p=0.000 n=10+10)
 ```
 </details>
 
