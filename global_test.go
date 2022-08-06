@@ -7,7 +7,6 @@
 package rand_test
 
 import (
-	"math"
 	"math/bits"
 	"pgregory.net/rand"
 	"sync/atomic"
@@ -38,28 +37,4 @@ func BenchmarkWyRand64(b *testing.B) {
 		s = wyrand64()
 	}
 	sinkUint64 = s
-}
-
-func BenchmarkFloat64(b *testing.B) {
-	var s float64
-	for i := 0; i < b.N; i++ {
-		s = rand.Float64()
-	}
-	sinkFloat64 = s
-}
-
-func BenchmarkIntn(b *testing.B) {
-	var s int
-	for i := 0; i < b.N; i++ {
-		s = rand.Intn(small)
-	}
-	sinkInt = s
-}
-
-func BenchmarkIntn_Big(b *testing.B) {
-	var s int
-	for i := 0; i < b.N; i++ {
-		s = rand.Intn(math.MaxInt - small)
-	}
-	sinkInt = s
 }

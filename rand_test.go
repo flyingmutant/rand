@@ -21,6 +21,36 @@ var (
 	sinkRand *rand.Rand
 )
 
+func BenchmarkFloat64(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		var s float64
+		for pb.Next() {
+			s = rand.Float64()
+		}
+		sinkFloat64 = s
+	})
+}
+
+func BenchmarkIntn(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		var s int
+		for pb.Next() {
+			s = rand.Intn(small)
+		}
+		sinkInt = s
+	})
+}
+
+func BenchmarkIntn_Big(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		var s int
+		for pb.Next() {
+			s = rand.Intn(math.MaxInt - small)
+		}
+		sinkInt = s
+	})
+}
+
 func BenchmarkRand_New(b *testing.B) {
 	var s *rand.Rand
 	b.ReportAllocs()
