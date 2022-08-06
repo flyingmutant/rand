@@ -6,10 +6,7 @@
 
 package rand
 
-import (
-	"hash/maphash"
-	"math/bits"
-)
+import "math/bits"
 
 type sfc64 struct {
 	a uint64
@@ -29,9 +26,9 @@ func (s *sfc64) init(a uint64, b uint64, c uint64) {
 }
 
 func (s *sfc64) init0() {
-	s.a = new(maphash.Hash).Sum64()
-	s.b = new(maphash.Hash).Sum64()
-	s.c = new(maphash.Hash).Sum64()
+	s.a = rand64()
+	s.b = rand64()
+	s.c = rand64()
 	s.w = 1
 }
 
