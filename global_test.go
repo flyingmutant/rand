@@ -13,13 +13,21 @@ import (
 	"testing"
 )
 
-var (
-	wyrandState uint64
+const (
+	wyrandAdd = 0xa0761d6478bd642f
+	wyrandXor = 0xe7037ed1a0b428db
 )
 
-func wyrand64() uint64 {
-	s := atomic.AddUint64(&wyrandState, 0xa0761d6478bd642f)
-	hi, lo := bits.Mul64(s, s^0xe7037ed1a0b428db)
+func wyrand64(state *uint64) uint64 {
+	s := *state + wyrandAdd
+	*state = s
+	hi, lo := bits.Mul64(s, s^wyrandXor)
+	return hi ^ lo
+}
+
+func wyrand64Atomic(state *uint64) uint64 {
+	s := atomic.AddUint64(state, wyrandAdd)
+	hi, lo := bits.Mul64(s, s^wyrandXor)
 	return hi ^ lo
 }
 
@@ -33,8 +41,18 @@ func BenchmarkRand64(b *testing.B) {
 
 func BenchmarkWyRand64(b *testing.B) {
 	var s uint64
+	var state uint64
 	for i := 0; i < b.N; i++ {
-		s = wyrand64()
+		s = wyrand64(&state)
+	}
+	sinkUint64 = s
+}
+
+func BenchmarkWyRand64Atomic(b *testing.B) {
+	var s uint64
+	var state uint64
+	for i := 0; i < b.N; i++ {
+		s = wyrand64Atomic(&state)
 	}
 	sinkUint64 = s
 }
