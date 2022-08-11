@@ -13,6 +13,16 @@ import (
 	"testing"
 )
 
+func BenchmarkUint64(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		var s uint64
+		for pb.Next() {
+			s = uint64(fastrand.Uint32())<<32 | uint64(fastrand.Uint32())
+		}
+		sinkUint64 = s
+	})
+}
+
 func BenchmarkIntn(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		var s uint32

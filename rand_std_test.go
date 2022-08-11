@@ -18,6 +18,16 @@ var (
 	sinkRand *rand.Rand
 )
 
+func BenchmarkUint64(b *testing.B) {
+	b.RunParallel(func(pb *testing.PB) {
+		var s uint64
+		for pb.Next() {
+			s = rand.Uint64()
+		}
+		sinkUint64 = s
+	})
+}
+
 func BenchmarkFloat64(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		var s float64

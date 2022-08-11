@@ -11,6 +11,16 @@ import (
 	"math/bits"
 )
 
+// Uint64 returns a uniformly distributed pseudo-random 64-bit value as an uint64.
+//
+// It is safe to call Uint64 concurrently from multiple goroutines, and its performance
+// does not degrade when the parallelism increases. However, non-concurrent use of
+// multiple instances of [Rand.Uint64] should be generally preferred over the concurrent use
+// of Uint64, as [Rand.Uint64] is faster, and it generates higher quality pseudo-random numbers.
+func Uint64() uint64 {
+	return rand64()
+}
+
 // Float64 returns, as a float64, a uniformly distributed pseudo-random number in the half-open interval [0.0, 1.0).
 //
 // It is safe to call Float64 concurrently from multiple goroutines, and its performance

@@ -34,7 +34,7 @@ func wyrand64Atomic(state *uint64) uint64 {
 func BenchmarkRand64(b *testing.B) {
 	var s uint64
 	for i := 0; i < b.N; i++ {
-		s = rand.Rand64()
+		s = rand.Uint64()
 	}
 	sinkUint64 = s
 }
