@@ -24,6 +24,7 @@ name                     old time/op    new time/op    delta
 Float64-48                  180ns ± 8%       1ns ±12%   -99.66%  (p=0.000 n=10+9)
 Intn-48                     186ns ± 2%       1ns ±11%   -99.63%  (p=0.000 n=10+10)
 Intn_Big-48                 200ns ± 1%       1ns ±19%   -99.28%  (p=0.000 n=8+10)
+Uint64-48                   193ns ± 5%       1ns ± 3%   -99.72%  (p=0.000 n=9+9)
 Rand_New                   12.7µs ± 4%     0.1µs ± 6%   -99.38%  (p=0.000 n=10+10)
 Rand_ExpFloat64            9.66ns ± 3%    5.90ns ± 3%   -38.97%  (p=0.000 n=10+10)
 Rand_Float32               8.90ns ± 5%    2.04ns ± 4%   -77.05%  (p=0.000 n=10+10)
@@ -68,6 +69,7 @@ name                     old time/op    new time/op    delta
 Float64-48                  175ns ± 8%       1ns ±12%   -99.65%  (p=0.000 n=10+9)
 Intn-48                     176ns ±10%       1ns ±11%   -99.61%  (p=0.000 n=10+10)
 Intn_Big-48                 174ns ± 1%       1ns ±19%   -99.18%  (p=0.000 n=9+10)
+Uint64-48                   157ns ± 5%       1ns ± 3%   -99.66%  (p=0.000 n=10+9)
 Rand_New                   78.8ns ± 6%    78.3ns ± 6%      ~     (p=0.853 n=10+10)
 Rand_ExpFloat64            8.94ns ± 6%    5.90ns ± 3%   -34.00%  (p=0.000 n=10+10)
 Rand_Float32               9.67ns ± 5%    2.04ns ± 4%   -78.89%  (p=0.000 n=10+10)
@@ -120,8 +122,9 @@ Note that `fastrand` [does not](https://gist.github.com/flyingmutant/bf3bd489ee3
 generate good random numbers.
 
 ```
-name     old time/op  new time/op  delta
-Intn-48  1.83ns ±21%  0.69ns ±11%  -62.35%  (p=0.000 n=10+10)
+name       old time/op  new time/op  delta
+Uint64-48  3.20ns ±35%  0.53ns ± 3%  -83.29%  (p=0.000 n=10+9)
+Intn-48    1.83ns ±21%  0.69ns ±11%  -62.35%  (p=0.000 n=10+10)
 ```
 </details>
 
@@ -160,7 +163,8 @@ Dislike for global mutable state. Also, without some kind of thread-local state 
 very slow (because global state needs to be mutex-protected). If you like the
 convenience of top-level functions, `math/rand` is a fine choice. And if you just need
 a couple of random integers and don't care about the performance, `rand.New().Int()` works too.
-As an exception, [`rand.Intn()`](https://pkg.go.dev/pgregory.net/rand#Intn) and
+As an exception, [`rand.Uint64()`](https://pkg.go.dev/pgregory.net/rand#Uint64),
+[`rand.Intn()`](https://pkg.go.dev/pgregory.net/rand#Intn) and
 [`rand.Float64()`](https://pkg.go.dev/pgregory.net/rand#Float64) are provided to ease
 porting of applications relying on a global random number generator that is safe for
 concurrent use.
