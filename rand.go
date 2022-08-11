@@ -279,7 +279,7 @@ func (r *Rand) Uint32n(n uint32) uint32 {
 	return uint32(res)
 }
 
-// Uint64 returns a uniformly distributed pseudo-random 64-bit value as a uint64.
+// Uint64 returns a uniformly distributed pseudo-random 64-bit value as an uint64.
 func (r *Rand) Uint64() uint64 {
 	return r.next64()
 }
