@@ -208,7 +208,10 @@ Very fast, but relatively new and untested. Also, no guarantees about the period
 
 ## Status
 
-`pgregory.net/rand` is alpha software. API breakage and bugs should be expected before 1.0.
+`pgregory.net/rand` is preparing for stable 1.0 release. Deterministic pseudo-random
+generation produces the same results on 32-bit and 64-bit architectures, both little-endian
+and big-endian. After 1.0, any observable change to these results would only occur together
+with a major version bump.
 
 ## License
 
