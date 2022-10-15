@@ -68,6 +68,44 @@ func (r *Rand) NormFloat64() float64 {
 	}
 }
 
+// NormFloat64 returns a normally distributed float64 in
+// the range -math.MaxFloat64 through +math.MaxFloat64 inclusive,
+// with standard normal distribution (mean = 0, stddev = 1).
+// To produce a different normal distribution, callers can
+// adjust the output using:
+//
+//	sample = NormFloat64() * desiredStdDev + desiredMean
+func NormFloat64() float64 {
+	for {
+		v := Uint64()
+		j := int64(v) >> 11 // Possibly negative
+		i := v & 0xFF
+		x := float64(j) * wn[i]
+		if absInt64(j) < kn[i] {
+			// This case should be hit better than 99% of the time.
+			return x
+		}
+
+		if i == 0 {
+			// This extra work is only required for the base strip.
+			for {
+				x = -math.Log(Float64()) * (1.0 / rn)
+				y := -math.Log(Float64())
+				if y+y >= x*x {
+					break
+				}
+			}
+			if j > 0 {
+				return rn + x
+			}
+			return -rn - x
+		}
+		if fn[i]+Float64()*(fn[i-1]-fn[i]) < math.Exp(-.5*x*x) {
+			return x
+		}
+	}
+}
+
 var kn = [256]uint64{
 	0xef33d8025bc39, 0x0, 0xc08be98f2acaa, 0xda354faba4236,
 	0xe51f67ec049b5, 0xeb255e9d2fa41, 0xeef4b817e221c, 0xf19470af9cc80,

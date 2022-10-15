@@ -4,13 +4,12 @@ Fast, high quality alternative to `math/rand` and `golang.org/x/exp/rand`.
 
 Compared to these packages, `pgregory.net/rand`:
 
-- is API-compatible with all `*rand.Rand` methods,
+- is API-compatible with all `*rand.Rand` methods and all top-level functions except `Seed()`,
 - is significantly faster, while improving the generator quality,
 - has simpler generator initialization:
   - `rand.New()` instead of `rand.New(rand.NewSource(time.Now().UnixNano()))`
   - `rand.New(1)` instead of `rand.New(rand.NewSource(1))`
-- is deliberately not providing most top-level functions like `ExpFloat64()` or `Int()`
-  and the `Source` interface.
+- is deliberately not providing top-level `Seed()` and the `Source` interface.
 
 ## Benchmarks
 
@@ -142,9 +141,9 @@ and it seems that there is no active development happening there.
 
 ### How does this thing work?
 
-This package builds on 3 primitives: raw 64-bit generation using `sfc64`, floating-point
-generation using floating-point multiplication, and integer generation in range using
-32.64 or 64.128 fixed-point multiplication.
+This package builds on 4 primitives: raw 64-bit generation using `sfc64` or goroutine-local
+`runtime.fastrand64()`, floating-point generation using floating-point multiplication,
+and integer generation in range using 32.64 or 64.128 fixed-point multiplication.
 
 ### Why is it fast?
 
@@ -157,17 +156,10 @@ is able to inline code, and a couple of micro-optimizations.
 In Go (but not in C++ or Rust) it is a costly abstraction that provides no real value.
 How often do you use a non-default `Source` with `math/rand`?
 
-### Why no top-level functions?
+### Why no top-level `Seed()`?
 
-Dislike for global mutable state. Also, without some kind of thread-local state they are
-very slow (because global state needs to be mutex-protected). If you like the
-convenience of top-level functions, `math/rand` is a fine choice. And if you just need
-a couple of random integers and don't care about the performance, `rand.New().Int()` works too.
-As an exception, [`rand.Uint64()`](https://pkg.go.dev/pgregory.net/rand#Uint64),
-[`rand.Intn()`](https://pkg.go.dev/pgregory.net/rand#Intn) and
-[`rand.Float64()`](https://pkg.go.dev/pgregory.net/rand#Float64) are provided to ease
-porting of applications relying on a global random number generator that is safe for
-concurrent use.
+Top-level `Seed()` would require sharing global mutex-protected state between all top-level
+functions, which (unlike the goroutine-local state used) does not scale when the parallelism increases.
 
 ### Why `sfc64`?
 
@@ -201,6 +193,9 @@ An excellent generator if you are OK with slightly lower quality. Because its ou
 (unlike `splitmix`) is not a bijection, some outputs are more likely to appear than others.
 You can easily observe this non-uniformity with
 a [birthday test](https://gist.github.com/flyingmutant/cb69e96872023f9f580868e746d1128a).
+On most modern platforms, top-level functions in this package use goroutine-local `wyrand`
+generators provided by the runtime as the best compromise between quality and speed
+of concurrent execution.
 
 #### ...`romu`?
 

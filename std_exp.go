@@ -48,6 +48,31 @@ func (r *Rand) ExpFloat64() float64 {
 	}
 }
 
+// ExpFloat64 returns an exponentially distributed float64 in the range
+// (0, +math.MaxFloat64] with an exponential distribution whose rate parameter
+// (lambda) is 1 and whose mean is 1/lambda (1).
+// To produce a distribution with a different rate parameter,
+// callers can adjust the output using:
+//
+//	sample = ExpFloat64() / desiredRateParameter
+func ExpFloat64() float64 {
+	for {
+		v := Uint64()
+		j := v >> 11
+		i := v & 0xFF
+		x := float64(j) * we[i]
+		if j < ke[i] {
+			return x
+		}
+		if i == 0 {
+			return re - math.Log(Float64())
+		}
+		if fe[i]+Float64()*(fe[i-1]-fe[i]) < math.Exp(-x) {
+			return x
+		}
+	}
+}
+
 var ke = [256]uint64{
 	0x1c5214272497c5, 0x0, 0x137d5bd79c3137, 0x186ef58e3f3bf4,
 	0x1a9bb7320eb0a2, 0x1bd127f7194473, 0x1c951d0f886514, 0x1d1bfe2d5c3970,

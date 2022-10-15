@@ -16,4 +16,4 @@ func GetExponentialDistributionParameters() (float64, [256]uint64, [256]float64,
 	return re, ke, we, fe
 }
 
-var ShuffleGeneric func(*Rand, []int)
+var ShuffleSliceGeneric func(*Rand, []int)

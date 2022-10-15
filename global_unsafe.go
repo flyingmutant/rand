@@ -4,12 +4,15 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at https://mozilla.org/MPL/2.0/.
 
-//go:build !go1.19 && !unsafe
+//go:build unsafe
 
 package rand
 
-import "hash/maphash"
+import (
+	_ "unsafe"
+)
 
-func rand64() uint64 {
-	return new(maphash.Hash).Sum64()
-}
+// if you *really* want to win the benchmarks game:
+
+//go:linkname rand64 runtime.fastrand64
+func rand64() uint64

@@ -15,15 +15,15 @@ import (
 	"testing"
 )
 
-func BenchmarkShuffle(b *testing.B) {
+func BenchmarkShuffleSlice(b *testing.B) {
 	r := rand.New(1)
 	a := make([]int, tiny)
 	for i := 0; i < b.N; i++ {
-		rand.Shuffle(r, a)
+		rand.ShuffleSlice(r, a)
 	}
 }
 
-func TestShuffle(t *testing.T) {
+func TestShuffleSlice(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		s := rapid.Uint64().Draw(t, "s").(uint64)
 		r := rand.New(s)
@@ -36,7 +36,7 @@ func TestShuffle(t *testing.T) {
 			buf1[i], buf1[j] = buf1[j], buf1[i]
 		})
 		r.Seed(s)
-		rand.Shuffle(r, buf2)
+		rand.ShuffleSlice(r, buf2)
 		if !bytes.Equal(buf1, buf2) {
 			t.Fatalf("shuffle results differ: %q vs %q", buf1, buf2)
 		}

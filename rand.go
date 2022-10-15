@@ -7,6 +7,14 @@
 // Package rand implements pseudo-random number generators unsuitable for
 // security-sensitive work.
 //
+// Top-level functions that do not have a [Rand] parameter, such as [Float64] and [Int],
+// use non-deterministic goroutine-local pseudo-random data sources that produce
+// different sequences of values each time a program is run. These top-level functions
+// are safe for concurrent use by multiple goroutines, and their performance does
+// not degrade when the parallelism increases. [Rand] methods and functions with
+// [Rand] parameter are not safe for concurrent use, but should generally be preferred
+// because of higher speed and quality.
+//
 // This package is considerably faster and generates higher quality random
 // than the [math/rand] package. However, this package's outputs might be
 // predictable regardless of how it's seeded. For random numbers
@@ -234,7 +242,7 @@ func (r *Rand) Read(p []byte) (n int, err error) {
 // Shuffle pseudo-randomizes the order of elements. n is the number of elements. Shuffle panics if n < 0.
 // swap swaps the elements with indexes i and j.
 //
-// For shuffling elements of a slice, prefer the top-level [Shuffle] function.
+// For shuffling elements of a slice, prefer the top-level [ShuffleSlice] function.
 func (r *Rand) Shuffle(n int, swap func(i, j int)) {
 	if n < 0 {
 		panic("invalid argument to Shuffle")

@@ -9,5 +9,5 @@
 package rand
 
 func init() {
-	ShuffleGeneric = func(r *Rand, s []int) { Shuffle(r, s) }
+	ShuffleSliceGeneric = func(r *Rand, s []int) { ShuffleSlice(r, s) }
 }
