@@ -81,23 +81,6 @@ func (r *Rand) new_(seed ...uint64) {
 	}
 }
 
-// Get returns r, initializing it as if it was constructed by [New] if it was previously uninitialized.
-// This allows to conveniently use Rand values non-deterministically without explicit initialization:
-//
-//	type Dice struct {
-//	    rng rand.Rand
-//	}
-//
-//	func (d *Dice) Roll() int {
-//	    return d.rng.Get().Intn(6)
-//	}
-func (r *Rand) Get() *Rand {
-	if r.w == 0 && *r == zero {
-		r.init0()
-	}
-	return r
-}
-
 // Seed uses the provided seed value to initialize the generator to a deterministic state.
 func (r *Rand) Seed(seed uint64) {
 	r.init1(seed)
