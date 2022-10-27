@@ -13,7 +13,7 @@
 // are safe for concurrent use by multiple goroutines, and their performance does
 // not degrade when the parallelism increases. [Rand] methods and functions with
 // [Rand] parameter are not safe for concurrent use, but should generally be preferred
-// because of higher speed and quality.
+// because of determinism, higher speed and quality.
 //
 // This package is considerably faster and generates higher quality random
 // than the [math/rand] package. However, this package's outputs might be
