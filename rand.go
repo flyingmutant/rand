@@ -41,10 +41,6 @@ const (
 	randSizeof = 8*4 + 8 + 1
 )
 
-var (
-	zero Rand
-)
-
 // Rand is a pseudo-random number generator based on the [SFC64] algorithm by Chris Doty-Humphrey.
 //
 // SFC64 has 256 bits of state, average period of ~2^255 and minimum period of at least 2^64.
