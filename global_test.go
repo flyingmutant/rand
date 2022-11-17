@@ -111,7 +111,7 @@ func TestUint32n(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		n := rapid.Uint32Range(1, math.MaxUint32).Draw(t, "n").(uint32)
 		v := rand.Uint32n(n)
-		if v < 0 || v >= n {
+		if v >= n {
 			t.Fatalf("got %v outside of [0, %v)", v, n)
 		}
 	})
@@ -121,7 +121,7 @@ func TestUint64n(t *testing.T) {
 	rapid.Check(t, func(t *rapid.T) {
 		n := rapid.Uint64Range(1, math.MaxUint64).Draw(t, "n").(uint64)
 		v := rand.Uint64n(n)
-		if v < 0 || v >= n {
+		if v >= n {
 			t.Fatalf("got %v outside of [0, %v)", v, n)
 		}
 	})

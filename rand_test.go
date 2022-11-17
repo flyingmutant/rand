@@ -99,7 +99,7 @@ func TestRand_Uint32n(t *testing.T) {
 		r := rand.New(s)
 		n := rapid.Uint32Range(1, math.MaxUint32).Draw(t, "n").(uint32)
 		v := r.Uint32n(n)
-		if v < 0 || v >= n {
+		if v >= n {
 			t.Fatalf("got %v outside of [0, %v)", v, n)
 		}
 	})
@@ -111,7 +111,7 @@ func TestRand_Uint64n(t *testing.T) {
 		r := rand.New(s)
 		n := rapid.Uint64Range(1, math.MaxUint64).Draw(t, "n").(uint64)
 		v := r.Uint64n(n)
-		if v < 0 || v >= n {
+		if v >= n {
 			t.Fatalf("got %v outside of [0, %v)", v, n)
 		}
 	})
