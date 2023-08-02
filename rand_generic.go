@@ -10,6 +10,26 @@ package rand
 
 import "math"
 
+type integer interface {
+	~int | ~int8 | ~int16 | ~int32 | ~int64 | ~uint | ~uint8 | ~uint16 | ~uint32 | ~uint64 | ~uintptr
+}
+
+// N returns a uniformly distributed pseudo-random number in [0, n).
+// The type parameter I can be any integer type. N panics if n <= 0.
+//
+// When r is nil, N uses non-deterministic goroutine-local pseudo-random data source,
+// and is safe for concurrent use from multiple goroutines.
+func N[I integer](r *Rand, n I) I {
+	if n <= 0 {
+		panic("invalid argument to N")
+	}
+	if r == nil {
+		return I(Uint64n(uint64(n)))
+	} else {
+		return I(r.Uint64n(uint64(n)))
+	}
+}
+
 // ShuffleSlice pseudo-randomizes the order of the elements of s.
 //
 // When r is nil, ShuffleSlices uses non-deterministic goroutine-local
