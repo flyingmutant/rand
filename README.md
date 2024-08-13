@@ -13,10 +13,56 @@ Compared to these packages, `pgregory.net/rand`:
 
 ## Benchmarks
 
-All benchmarks were run on `Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz`,
-`linux/amd64`.
+Compared to [math/rand/v2](https://pkg.go.dev/math/rand/v2) (top-level functions & PCG source):
 
-Compared to [math/rand](https://pkg.go.dev/math/rand):
+`Intel(R) Core(TM) i7-10510U CPU @ 1.80GHz`, `linux/amd64`
+
+```
+name                    old time/op    new time/op    delta
+Float64-8                 3.29ns ± 2%    3.55ns ±15%     +7.92%  (p=0.006 n=9+10)
+Intn-8                    3.86ns ± 1%    3.96ns ± 4%     +2.58%  (p=0.002 n=9+8)
+Intn_Big-8                6.46ns ± 2%    7.45ns ±15%    +15.35%  (p=0.000 n=8+10)
+Uint64-8                  3.06ns ± 1%    3.20ns ± 2%     +4.75%  (p=0.000 n=10+8)
+Rand_New                   107ns ± 1%     102ns ± 1%     -4.85%  (p=0.000 n=9+9)
+Rand_ExpFloat64           13.0ns ± 1%     8.9ns ± 3%    -31.25%  (p=0.000 n=9+8)
+Rand_Float32              7.67ns ± 3%    3.61ns ± 2%    -52.93%  (p=0.000 n=9+10)
+Rand_Float64              7.95ns ± 3%    4.22ns ± 2%    -46.99%  (p=0.000 n=10+9)
+Rand_Int                  6.79ns ± 1%    3.90ns ± 0%    -42.54%  (p=0.000 n=10+8)
+Rand_Int31                6.79ns ± 1%    2.56ns ± 1%    -62.30%  (p=0.000 n=10+9)
+Rand_Int31n               10.2ns ± 1%     4.2ns ± 1%    -59.15%  (p=0.000 n=9+9)
+Rand_Int31n_Big           10.2ns ± 1%     4.2ns ± 1%    -59.25%  (p=0.000 n=9+10)
+Rand_Int63                6.90ns ± 4%    3.92ns ± 1%    -43.20%  (p=0.000 n=9+8)
+Rand_Int63n               10.3ns ± 5%     5.5ns ± 1%    -46.40%  (p=0.000 n=9+8)
+Rand_Int63n_Big           28.8ns ± 1%     8.8ns ± 1%    -69.44%  (p=0.000 n=10+8)
+Rand_Intn                 10.2ns ± 1%     5.5ns ± 0%    -46.75%  (p=0.000 n=9+8)
+Rand_Intn_Big             28.7ns ± 1%     8.8ns ± 1%    -69.44%  (p=0.000 n=9+8)
+Rand_NormFloat64          14.1ns ± 2%     9.1ns ± 1%    -35.19%  (p=0.000 n=9+9)
+Rand_Perm                  951ns ± 5%     451ns ± 1%    -52.60%  (p=0.000 n=9+9)
+Rand_Seed                 0.57ns ± 3%   46.09ns ± 1%  +7995.18%  (p=0.000 n=10+9)
+Rand_Shuffle               711ns ± 1%     412ns ± 1%    -42.12%  (p=0.000 n=10+8)
+Rand_ShuffleOverhead       638ns ± 3%     306ns ± 1%    -52.09%  (p=0.000 n=9+10)
+Rand_Uint32               7.12ns ±12%    2.48ns ± 1%    -65.24%  (p=0.000 n=10+9)
+Rand_Uint64               6.86ns ± 1%    3.93ns ± 0%    -42.64%  (p=0.000 n=8+9)
+ShuffleSlice               284ns ± 1%     278ns ± 1%     -2.09%  (p=0.000 n=8+8)
+
+name                    old speed      new speed      delta
+Uint64                  2.62GB/s ± 1%  2.48GB/s ± 7%     -5.30%  (p=0.000 n=10+9)
+Rand_Uint32              564MB/s ±11%  1616MB/s ± 1%   +186.63%  (p=0.000 n=10+9)
+Rand_Uint64             1.17GB/s ± 1%  2.03GB/s ± 0%    +74.32%  (p=0.000 n=8+9)
+
+name                    old alloc/op   new alloc/op   delta
+Rand_New                   32.0B ± 0%     48.0B ± 0%    +50.00%  (p=0.000 n=10+10)
+Rand_Perm                   416B ± 0%      416B ± 0%       ~     (all equal)
+
+name                    old allocs/op  new allocs/op  delta
+Rand_New                    2.00 ± 0%      1.00 ± 0%    -50.00%  (p=0.000 n=10+10)
+Rand_Perm                   1.00 ± 0%      1.00 ± 0%       ~     (all equal)
+```
+
+<details>
+<summary>Compared to <a href="https://pkg.go.dev/math/rand">math/rand</a>:</summary>
+
+`Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz`, `linux/amd64`
 
 ```
 name                     old time/op    new time/op    delta
@@ -59,9 +105,12 @@ Rand_Read                 887MB/s ± 4%  2464MB/s ± 4%  +177.83%  (p=0.000 n=10
 Rand_Uint32               511MB/s ± 3%  2306MB/s ± 7%  +350.86%  (p=0.000 n=10+10)
 Rand_Uint64               834MB/s ± 3%  2811MB/s ± 4%  +236.85%  (p=0.000 n=10+10)
 ```
+</details>
 
 <details>
 <summary>Compared to <a href="https://pkg.go.dev/golang.org/x/exp/rand">golang.org/x/exp/rand</a>:</summary>
+
+`Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz`, `linux/amd64`
 
 ```
 name                     old time/op    new time/op    delta
@@ -120,6 +169,8 @@ Rand_Uint64              1.56GB/s ± 5%  2.81GB/s ± 4%   +80.32%  (p=0.000 n=10
 Note that `fastrand` [does not](https://gist.github.com/flyingmutant/bf3bd489ee3c7a32f40714c11325d614)
 generate good random numbers.
 
+`Intel(R) Xeon(R) CPU E5-2680 v3 @ 2.50GHz`, `linux/amd64`
+
 ```
 name       old time/op  new time/op  delta
 Uint64-48  3.20ns ±35%  0.53ns ± 3%  -83.29%  (p=0.000 n=10+9)
@@ -138,6 +189,12 @@ in terms of quality (but can not be changed because of Go 1 compatibility promis
 https://gist.github.com/flyingmutant/0b380f432308beaaf09c0a038f918aa4))
 quality issues, without improving the speed,
 and it seems that there is no active development happening there.
+
+### Should I use this or `math/rand/v2`?
+
+If you are not counting nanoseconds, use `math/rand/v2`, it is a huge improvement
+over nearly all aspects of `math/rand`. If you are counting nanoseconds,
+`pgregory.net/rand` is still faster, without compromising quality.
 
 ### How does this thing work?
 
