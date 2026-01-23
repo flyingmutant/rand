@@ -12,7 +12,7 @@ import "math"
 
 // ShuffleSlice pseudo-randomizes the order of the elements of s.
 //
-// When r is nil, ShuffleSlices uses non-deterministic goroutine-local
+// When r is nil, ShuffleSlice uses non-deterministic goroutine-local
 // pseudo-random data source, and is safe for concurrent use from multiple goroutines.
 func ShuffleSlice[S ~[]E, E any](r *Rand, s S) {
 	if r == nil {
